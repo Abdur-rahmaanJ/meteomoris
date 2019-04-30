@@ -8,6 +8,10 @@ r = requests.get(URL)
 
 soup = BeautifulSoup(r.content, 'html.parser')
 
+def __download_file(url, path):
+    r = requests.get(url, allow_redirects=True)
+    open(path, 'wb').write(r.content)
+
 def get_weekforecast(day=None):
     w_forecast = soup.find(attrs={'class': 'daysforecast'})
     week_forcecast = w_forecast.find_all(attrs={'class': 'forecast'})
@@ -102,4 +106,56 @@ def get_cityforecast(day=None):
 
     return return_data
 
-pprint(get_cityforecast())
+
+def get_moonphase(month=None):
+    # should we give time as 12:34?
+    moonphase_url = 'http://metservice.intnet.mu/sun-moon-and-tides-moon-phase.php'
+    moon_r = requests.get(moonphase_url).content
+    moon_soup = BeautifulSoup(moon_r, 'html.parser')
+    table = moon_soup.find('table')
+    rows = table.find_all('tr')
+    months = rows[0].find_all('p')
+    month1 = months[0].text
+    month2 = months[1].text
+
+    moon_phase = {
+        month1: {},
+        month2: {}
+    }
+
+    data_rows = rows[2:]
+
+    def assign(key):
+        moon_phase[month1][key] = {}
+        moon_phase[month1][key]['date'] = info[1]
+        moon_phase[month1][key]['hour'] = info[2]
+        moon_phase[month1][key]['minute'] = info[3]
+
+        moon_phase[month2][key] = {}
+        moon_phase[month2][key]['date'] = info[5]
+        moon_phase[month2][key]['hour'] = info[6]
+        moon_phase[month2][key]['minute'] = info[7]
+
+    for i, row in enumerate(data_rows):
+        info = row.find_all('p')
+        info = [i.text for i in info]
+        if i == 0:
+            assign('new moon')
+        elif i == 1:
+            assign('first quarter')
+        elif i == 2:
+            assign('full moon')
+        elif i == 3:
+            assign('last quarter')
+
+    if month is None:
+        return moon_phase
+    else:
+        return moon_phase[month]
+
+
+# TODO
+#def download_moonphase_pdf(path):
+#    url = 'http://metservice.intnet.mu/mmsimages/Phases%20of%20the%20Moon2019.pdf'
+#    __download_file(url, path)
+#    print('downloaded moonphase pdf')

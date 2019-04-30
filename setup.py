@@ -42,7 +42,7 @@ setup(
     # For a discussion on single-sourcing the version across setup.py and the
     # project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='0.5.0',  # Required
+    version='0.7.0',  # Required
 
     # This is a one-line description or tagline of what your project does. This
     # corresponds to the "Summary" metadata field:
@@ -97,7 +97,7 @@ setup(
 
         # Indicate who your project is intended for
         'Intended Audience :: Developers',
-        'Topic :: Weather',
+        # 'Topic :: Weather',
 
         # Pick your license as you wish
         'License :: OSI Approved :: MIT License',
@@ -135,7 +135,7 @@ setup(
     # and refuse to install the project if the version does not match. If you
     # do not support Python 2, you can simplify this to '>=3.5' or similar, see
     # https://packaging.python.org/guides/distributing-packages-using-setuptools/#python-requires
-    python_requires='>=3.5',
+    python_requires='>=3.4',
 
     # This field lists other packages that your project depends on to run.
     # Any package you put here will be installed by pip when your project is
