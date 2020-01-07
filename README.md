@@ -55,3 +55,14 @@ get info about the weather in mauritius!
 >>> may['new moon']['date']
 '05'
 ```
+
+# Local test
+
+```
+git clone https://github.com/Abdur-rahmaanJ/meteomoris.git
+```
+
+```
+python -m pip install <path-to-package>/meteomoris
+```
+
