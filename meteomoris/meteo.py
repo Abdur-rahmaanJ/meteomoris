@@ -153,6 +153,12 @@ def get_moonphase(month=None):
     else:
         return moon_phase[month]
 
+def get_main_message():
+    """
+    Get the main message of website
+    """
+    message = soup.find('div', attrs={'class': 'warning'})
+    return message.text.strip()
 
 # TODO
 #def download_moonphase_pdf(path):
