@@ -2,6 +2,10 @@
 
 get info about the weather in mauritius!
 
+```
+pip install meteomoris
+```
+
 # examples
 
 ```python
