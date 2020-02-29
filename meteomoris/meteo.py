@@ -167,16 +167,11 @@ def getEclipseText():
     
     url = 'http://metservice.intnet.mu/sun-moon-and-tides-info-eclipses.php'
     r = requests.get(url)
-    page_soup = BeautifulSoup(r.text)
+    page_soup = BeautifulSoup(r.text, "html.parser")
     page_container = page_soup.find("div", {"class":"left_content"}).findAll("p")
-
-    #creating empty string to hold the data
-    eclipse_text = ''
-
-    #strip the first and last line, since they aren't to do with eclipses
     page_container = page_container[1:-1]
 
-    #grab the text from each line, and append it line-by-line to the result container
+    eclipse_text = ''
     for line in page_container:
         eclipse_text += line.text + '\n'
 
@@ -186,14 +181,13 @@ def getCycloneText():
     '''small function to scrape the cyclone data from a website'''
     url = 'http://metservice.intnet.mu/current-cyclone.php'
     r = requests.get(url)
-    page_soup = soup(r.text, "html.parser")
-    
+    page_soup = BeautifulSoup(r.text, "html.parser")
+    page_container = page_soup.find("div", {"class":"cycloneinfo"}).findAll("p")
+    page_container = page_container[1:-1]
+
     cyclone_text = ''
-    for i in range(len(page_soup)):
-        page_container = page_soup[i].find("div", {"class":"cycloneinfo"})
-        page_container = page_container[1:-1]
-        for line in page_container:
-            cyclone_text += line.text + '\n'
+    for line in page_container:
+        cyclone_text += line.text + '\n'
     return cyclone_text
 
 # TODO
