@@ -191,6 +191,20 @@ def getEclipseText():
 
     return eclipse_text
 
+def getCycloneText():
+    '''small function to scrape the cyclone data from a website'''
+    url = 'http://metservice.intnet.mu/current-cyclone.php'
+    r = requests.get(url)
+    page_soup = soup(r.text, "html.parser")
+    
+    cyclone_text = ''
+    for i in range(len(page_soup)):
+        page_container = page_soup[i].find("div", {"class":"cycloneinfo"})
+        page_container = page_container[1:-1]
+        for line in page_container:
+            cyclone_text += line.text + '\n'
+    return cyclone_text
+
 # TODO
 #def download_moonphase_pdf(path):
 #    url = 'http://metservice.intnet.mu/mmsimages/Phases%20of%20the%20Moon2019.pdf'
