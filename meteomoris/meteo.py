@@ -191,6 +191,19 @@ def getEclipseText():
 
     return eclipse_text
 
+def getCycloneInfo():
+	
+	#getting the request info
+	r = requests.get("http://metservice.intnet.mu/current-cyclone.php")
+	s = BeautifulSoup(r.content, "html.parser")
+	#getting the info tag text
+	info = s.find("div", attrs={"style" : "width: 20%; float:right"}).text.strip()
+	if(info==''):
+		return ">NO CYCLONES NOW<"
+	else:
+		return info 
+	
+	
 # TODO
 #def download_moonphase_pdf(path):
 #    url = 'http://metservice.intnet.mu/mmsimages/Phases%20of%20the%20Moon2019.pdf'
