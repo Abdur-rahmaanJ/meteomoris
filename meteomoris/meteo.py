@@ -162,7 +162,7 @@ def get_main_message():
 
 #this will return the relevant eclipse information as a string
 
-def getEclipseText():
+def get_eclipse_text():
     '''small function to scrape the eclipse data from a website'''
     
     url = 'http://metservice.intnet.mu/sun-moon-and-tides-info-eclipses.php'
@@ -177,7 +177,7 @@ def getEclipseText():
 
     return eclipse_text
 
-def getCycloneText():
+def get_cyclone_text():
     '''small function to scrape the cyclone data from a website'''
     #getting the request info
     r = requests.get("http://metservice.intnet.mu/current-cyclone.php")
