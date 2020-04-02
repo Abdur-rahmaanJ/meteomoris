@@ -179,15 +179,15 @@ def getEclipseText():
 
 def getCycloneText():
     '''small function to scrape the cyclone data from a website'''
-   	#getting the request info
-	r = requests.get("http://metservice.intnet.mu/current-cyclone.php")
-	s = BeautifulSoup(r.content, "html.parser")
-	#getting the info tag text
-	info = s.find("div", attrs={"style" : "width: 20%; float:right"}).text.strip()
-	if(info==''):
-		return ">NO CYCLONES NOW<"
-	else:
-		return info
+    #getting the request info
+    r = requests.get("http://metservice.intnet.mu/current-cyclone.php")
+    s = BeautifulSoup(r.content, "html.parser")
+    #getting the info tag text
+    info = s.find("div", attrs={"style" : "width: 20%; float:right"}).text.strip()
+    if(info==''):
+        return ">NO CYCLONES NOW<"
+    else:
+        return info
 
 # TODO
 #def download_moonphase_pdf(path):

@@ -42,7 +42,7 @@ setup(
     # For a discussion on single-sourcing the version across setup.py and the
     # project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='0.8.0',  # Required
+    version='0.9.3',  # Required
 
     # This is a one-line description or tagline of what your project does. This
     # corresponds to the "Summary" metadata field:
@@ -110,6 +110,7 @@ setup(
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8'
     ],
 
     # This field adds keywords for your project which will appear on the
@@ -128,7 +129,8 @@ setup(
     #   py_modules=["my_module"],
     #
     # packages=find_packages(exclude=['contrib', 'docs', 'tests']),  # Required
-    py_modules=["meteomoris"],
+    packages=["meteomoris"],
+    include_package_data=True,
 
     # Specify which Python versions you support. In contrast to the
     # 'Programming Language' classifiers above, 'pip install' will check this
@@ -200,4 +202,5 @@ setup(
         'Bug Reports': 'https://github.com/Abdur-RahmaanJ/meteomoris/issues',
         'Source': 'https://github.com/Abdur-RahmaanJ/meteomoris/'
     },
+    entry_points={"console_scripts": ["meteomoris=meteomoris.__main__:main"]},
 )
