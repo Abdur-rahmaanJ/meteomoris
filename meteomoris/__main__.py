@@ -1,4 +1,3 @@
-import meteomoris
 
 def main():
     print('meteomoris::package to get meteo of mauritius')

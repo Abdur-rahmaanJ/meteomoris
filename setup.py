@@ -7,6 +7,9 @@ https://github.com/pypa/sampleproject
 # Always prefer setuptools over distutils
 from setuptools import setup, find_packages
 from os import path
+import os
+import sys
+from meteomoris import __version__
 # io.open is needed for projects that support Python 2.7
 # It ensures open() defaults to text mode with universal newlines,
 # and accepts an argument to specify the text encoding
@@ -18,6 +21,23 @@ here = path.abspath(path.dirname(__file__))
 # Get the long description from the README file
 with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
+
+
+if sys.argv[-1] == "publish":  # requests
+    os.system("python setup.py sdist")  # bdist_wheel
+    os.system("twine upload dist/* --skip-existing")
+    sys.exit()
+
+requires = [
+    'beautifulsoup4==4.9.3',
+    'bs4==0.0.1',
+    'certifi==2020.12.5',
+    'chardet==3.0.4',
+    'click==7.1.2',
+    'requests==2.20.0',
+    'soupsieve==2.2.1',
+    'urllib3==1.24.3',
+]
 
 # Arguments marked as "Required" below must be included for upload to PyPI.
 # Fields marked as "Optional" may be commented out.
@@ -42,7 +62,7 @@ setup(
     # For a discussion on single-sourcing the version across setup.py and the
     # project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='0.9.4',  # Required
+    version=__version__,  # Required
 
     # This is a one-line description or tagline of what your project does. This
     # corresponds to the "Summary" metadata field:
@@ -145,7 +165,7 @@ setup(
     #
     # For an analysis of "install_requires" vs pip's requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
-    install_requires = open('requirements.txt').read().split('\n'),  # Optional
+    install_requires=requires,  # Optional
 
     # List additional groups of dependencies here (e.g. development
     # dependencies). Users will be able to install these using the "extras"

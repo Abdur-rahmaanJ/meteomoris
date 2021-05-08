@@ -1,12 +1,17 @@
-import requests
-from bs4 import BeautifulSoup
-from pprint import pprint
+try:
+    import requests
+    from bs4 import BeautifulSoup
+    from pprint import pprint
+    URL = 'http://metservice.intnet.mu'
 
-URL = 'http://metservice.intnet.mu'
+    r = requests.get(URL)
 
-r = requests.get(URL)
+    soup = BeautifulSoup(r.content, 'html.parser')
+except Exception as e:
+    pass
 
-soup = BeautifulSoup(r.content, 'html.parser')
+
+
 
 def __download_file(url, path):
     r = requests.get(url, allow_redirects=True)
