@@ -1,6 +1,12 @@
+import click
 
-def main():
-    print('meteomoris::package to get meteo of mauritius')
+@click.group()
+def cli():
+    pass
+
+@cli.command()
+def dashboard():
+    print('---')
 
 if __name__ == '__main__':
-    main()
+    cli(obj={})
