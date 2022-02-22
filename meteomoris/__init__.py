@@ -11,4 +11,4 @@ test = Meteo.test
 get_sunrisemu = Meteo.get_sunrisemu
 get_sunriserodr = Meteo.get_sunriserodr
 
-__version__ = '2.0.0'
+__version__ = '2.0.1'
