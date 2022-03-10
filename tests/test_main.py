@@ -30,3 +30,16 @@ def test_sunrisemu():
 
 def test_sunriserodr():
     assert isinstance(meteomoris.get_sunriserodr(), dict)
+
+
+
+def test_eclipses():
+    assert isinstance(meteomoris.get_eclipses(), list)
+
+
+def test_equinoxes():
+    assert isinstance(meteomoris.get_equinoxes(), list)
+
+
+def test_solstices():
+    assert isinstance(meteomoris.get_solstices(), list)

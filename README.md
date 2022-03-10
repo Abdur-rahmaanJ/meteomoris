@@ -67,19 +67,67 @@ Venv explanations at footer.
 >>> may = get_moonphase(month='May 2019')
 >>> may['new moon']['date']
 '05'
+
 >>> get_sunrisemu()
-{'february': {1: {'rise': '05:53', 'set': '18:53'},
-              ...
-              28: {'rise': '06:07', 'set': '18:37'}},
- 'march': {1: {'rise': '06:07', 'set': '18:36'},
-           2: {'rise': '06:07', 'set': '18:36'},
-           ...
-           31: {'rise': '06:16', 'set': '18:11'}
-           }
+{
+ 'february': {
+                1: {'rise': '05:53', 'set': '18:53'},
+                ...
+                28: {'rise': '06:07', 'set': '18:37'}
+            },
+ 'march': {
+            1: {'rise': '06:07', 'set': '18:36'},
+            2: {'rise': '06:07', 'set': '18:36'},
+            ...
+            31: {'rise': '06:16', 'set': '18:11'}
+        }
 }
+
 >>> get_sunriserodr()
+
 >>> get_sunrisemu().keys()
 dict_keys(['february', 'march'])
+
+>>> get_eclipses()
+[
+ {
+    'end': {'date': 1, 'hour': 2, 'minute': 37, 'month': 'may'},
+    'info': 'The eclipse will not be visible in Mauritius, Rodrigues, St. Brandon and Agalega.',
+    'start': {'date': 30, 'hour': 22, 'minute': 45, 'month': 'april'},
+    'status': 'partial',
+    'type': 'sun'
+ },
+ ...
+ {
+    'end': {'date': 8, 'hour': 17, 'minute': 56, 'month': 'november'},
+    'info': 'The eclipse will not be visible in Mauritius, Rodrigues, St. Brandon and Agalega.',
+    'start': {'date': 8, 'hour': 12, 'minute': 2, 'month': 'november'},
+    'status': 'total',
+    'type': 'moon'
+ }
+]
+
+>>> get_equinoxes()
+[
+ {
+    'day': 20, 'hour': 19, 'minute': 33, 'month': 'march', 'year': 2022
+ },
+ {
+  'day': 23, 'hour': 5, 'minute': 3, 'month': 'september', 'year': 2022
+ }
+]
+
+>>> get_solstices()
+[
+ {
+    'day': 21, 'hour': 13, 'minute': 13, 'month': 'june', 'year': 2022
+ },
+ {
+    'day': 22, 'hour': 1, 'minute': 48, 'month': 'december', 'year': 2022
+ }
+]
+
+
 ```
 
 # Global settings
@@ -147,6 +195,17 @@ Run
 # Changelog
 
 
+## 2.1.0
+
+- Fix get_moonphase
+- Add get_equinoxes
+- Add get_solstices
+- Add get_equinoxes
+
+## 2.0.2
+
+- Fix broken install
+
 ### 2.0.1
 
 
@@ -155,9 +214,10 @@ Run
 
 ### 2.0.0
 
-- Added Meteo with classmethod workings
-- Internet check
-- Global settings
-- Headers
-- Sunrise and sunset for Mauritius and Rodrigues
-- Basic tests
+- Add Meteo with classmethod
+- Add internet check
+- Add global settings
+- Add headers change option
+- Add get_sunrisemu
+- Add get_sunriserodr
+- Tests basics

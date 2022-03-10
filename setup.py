@@ -30,13 +30,8 @@ if sys.argv[-1] == "publish":  # requests
 
 requires = [
     'beautifulsoup4>=4.9.3',
-    'bs4>=0.0.1',
-    'certifi>=2020.12.5',
-    'chardet>=3.0.4',
     'click>=7.1.2',
     'requests>=2.20.0',
-    'soupsieve>=2.2.1',
-    'urllib3>=1.24.3',
     'rich>=11.2.0'
 ]
 

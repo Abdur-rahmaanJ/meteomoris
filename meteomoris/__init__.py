@@ -10,5 +10,8 @@ get_eclipse_text = Meteo.get_eclipse_text
 test = Meteo.test
 get_sunrisemu = Meteo.get_sunrisemu
 get_sunriserodr = Meteo.get_sunriserodr
+get_eclipses = Meteo.get_eclipses
+get_equinoxes = Meteo.get_equinoxes
+get_solstices = Meteo.get_solstices
 
-__version__ = '2.0.1'
+__version__ = "2.1.0"

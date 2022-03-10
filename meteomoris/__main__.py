@@ -1,12 +1,18 @@
 import click
 
+
 @click.group()
 def cli():
     pass
 
+
 @cli.command()
 def dashboard():
-    print('---')
+    print("---")
 
-if __name__ == '__main__':
+
+def main():
     cli(obj={})
+
+if __name__ == "__main__":
+    main()
