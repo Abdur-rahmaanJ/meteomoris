@@ -20,7 +20,7 @@ import sys
 #     r = requests.get(url, allow_redirects=True)
 #     open(path, 'wb').write(r.content)
 
-
+console = Console()
 
 def internet_present(exit=False):
     console = Console()
@@ -53,6 +53,7 @@ class Meteo:
 
     EXIT_ON_NO_INTERNET = False
     CHECK_INTERNET = False
+    print = console.print
 
     headers = {
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:32.0) Gecko/20100101 Firefox/32.0",
@@ -253,6 +254,7 @@ class Meteo:
 
             cols = [ele.text.strip() for ele in cols]
 
+
             if i == 0: # first row
                 month1 = cols[0].lower()
                 month2 = cols[1].lower()
@@ -269,7 +271,6 @@ class Meteo:
                 m2_hour = int(cols[6])
                 m2_min = int(cols[7])
 
-
                 code_lookup = {
                     'N.M': 'new moon',
                     'F.Q': 'first quarter',
@@ -277,27 +278,20 @@ class Meteo:
                     'L.Q': 'last quarter'
                 }
 
-                if all([
-                    m1_phase, 
-                    m1_date, 
-                    m1_hour,
-                    m1_min,
-                    m2_phase, 
-                    m2_date, 
-                    m2_hour,
-                    m2_min
-                    ]):
-                    phase = code_lookup[m1_phase]
-                    data[month1][phase] = {
-                        "date": m1_date, 
-                        "hour": m1_hour,
-                        "minute": m1_min
-                        }
-                    data[month2][phase] = {
-                        "date": m1_date, 
-                        "hour": m1_hour,
-                        "minute": m1_min
-                        }
+                phase1 = code_lookup[m1_phase]
+                data[month1][phase1] = {
+                    "date": m1_date, 
+                    "hour": m1_hour,
+                    "minute": m1_min
+                    }
+
+                phase2 = code_lookup[m2_phase]
+                data[month2][phase2] = {
+                    "date": m2_date, 
+                    "hour": m2_hour,
+                    "minute": m2_min
+                    }
+
 
         if print_:
             console = Console()
