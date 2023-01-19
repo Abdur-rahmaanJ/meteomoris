@@ -10,27 +10,61 @@ Venv explanations at footer.
 
 # Examples
 
+NOTE: Add `print=True` to get a tabular representation
+
 ```python
 >>> from meteomoris import *
 
 >>> get_main_message()
 "A Strong Wind Warning and High Wave Warning for Mauritius | Aucun avertissement de cyclone n'est en vigueur a Maurice | Avertissement de fortes houles pour Rodrigues"
+>>> get_main_message(links=True)
+[
+   ('The Mauritius Meteorological Services (Warnings) Regulations 2023', 'http://metservice.intnet.mu/about-us/legislations/'), 
+   ('Heavy Rain warning Bulletin for Mauritius issued at 0500 hours on Thursday 19 January 2023, valid until 0500 hours  Friday 20 January 2023.', 'http://metservice.intnet.mu/warning-bulletin-special-weather.php')
+]
+>>> get_special_whether_bulletin()
+Special Weather Bulletin
+Thu, Jan 19, 2023Heavy Rain warning Bulletin for Mauritius issued at 0500 hours on Thursday 19 January 2023, valid until 0500 hours  Friday 20 January 2023. 
+ 
+Heavy rain warning is in force in Mauritius
+Active clouds coming from the North-East are influencing the local weather.
+Moderate to heavy showers with thunderstorms are expected over the island.
+ 
+The public is advised to:
+1. Remain in safe places and avoid open areas, hikings, sea ventures and sheltering under trees during thunderstorms.
+2. Avoid places prone to water accumulation, river banks and other water courses which are flooded and certain mountain slopes prone to landslide
+3. Be very cautious on the roads due to reduced visibility resulting from heavy rains and fog patches
 
+...
 >>> get_weekforecast()
 [
- {'condition': 'Few showers highgrounds',
-     'date': 'Apr 22',
-     'day': 'Mon',
-     'max': '32�',
-     'min': '21�',
-     'probability': 'High',
-     'sea condition': 'rough',
-     'wind': 'E25G50'},
+ {
+   'condition': 'Few showers highgrounds',
+   'date': 'Apr 22',
+   'day': 'Mon',
+   'max': '32�',
+   'min': '21�',
+   'probability': 'High',
+   'sea condition': 'rough',
+   'wind': 'E25G50'
+ },
  {
 ...
  }
 ]
-
+>>> get_weekforecast(print=True)
+                                                     Week forecast                                                     
+┏━━━━━┳━━━━━━━━┳━━━━━┳━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━━━┓
+┃ Day ┃ Date   ┃ Min ┃ Max ┃ Condition                                                     ┃ Sea condition ┃ Wind     ┃
+┡━━━━━╇━━━━━━━━╇━━━━━╇━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━━━┩
+│ Thu │ Jan 19 │ 19° │ 30° │ Moderate to locally heavy showers with isolated thunderstorms │ rough         │ ENE25G50 │
+│ Fri │ Jan 20 │ 20° │ 30° │ Moderate to locally heavy showers with isolated thunderstorms │ rough         │ NE20     │
+│ Sat │ Jan 21 │ 20° │ 30° │ Moderate showers with isolated thunderstorms                  │ moderate      │ NE20     │
+│ Sun │ Jan 22 │ 20° │ 30° │ Moderate showers with isolated thunderstorms                  │ moderate      │ N15      │
+│ Mon │ Jan 23 │ 20° │ 30° │ Moderate to heavy thundery showers                            │ rough         │ N15      │
+│ Tue │ Jan 24 │ 20° │ 30° │ Moderate to heavy thundery showers                            │ rough         │ N20      │
+│ Wed │ Jan 25 │ 20° │ 30° │ Moderate to heavy thundery showers                            │ rough         │ N25      │
+└─────┴────────┴─────┴─────┴───────────────────────────────────────────────────────────────┴───────────────┴──────────┘
 >>> get_weekforecast(day=3)
 {'condition': 'Few passing showers',
  'date': 'Apr 25',
@@ -57,10 +91,12 @@ Venv explanations at footer.
 
 
 >>> get_moonphase()
-{'April 2019': {'first quarter': {'date': '12', 'hour': '23', 'minute': '06'},
+{'April 2019': {
+                'first quarter': {'date': '12', 'hour': '23', 'minute': '06'},
                 'full moon': {'date': '19', 'hour': '15', 'minute': '12'},
                 'last quarter': {'date': '27', 'hour': '02', 'minute': '18'},
-                'new moon': {'date': '05', 'hour': '12', 'minute': '50'}},
+                'new moon': {'date': '05', 'hour': '12', 'minute': '50'}
+                },
  'May 2019': {'first quarter': {'date': '12', 'hour': '05', 'minute': '12'},
 ...
 
@@ -130,6 +166,22 @@ dict_keys(['february', 'march'])
 
 ```
 
+# Cli
+
+```
+Usage: meteomoris [OPTIONS] COMMAND [ARGS]...
+
+Options:
+  --help  Show this message and exit.
+
+Commands:
+  dashboard
+  forecast     Week forecast
+  message      Message of the day
+  sunrisemu    Sunrise (Mauritius)
+  sunriserodr  Sunrise (Rodrigues)
+```
+
 # Global settings
 
 ```python
@@ -194,6 +246,10 @@ Run
 
 # Changelog
 
+
+## 2.2.0
+
+- Add print commands and API
 
 ## 2.1.0
 

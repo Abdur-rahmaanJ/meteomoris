@@ -22,9 +22,10 @@ def sunrisemu():
 def sunriserodr():
     get_sunriserodr(print=True)
 
-@cli.command(help="Sunrise (Rodrigues)")
-def message():
-    get_main_message(print=True)
+@cli.command(help="Message of the day")
+@click.option("--links", is_flag=True, show_default=True, default=False, help="Show message links")
+def message(links):
+    get_main_message(print_=True, links=links)
 
 def main():
     cli(obj={})

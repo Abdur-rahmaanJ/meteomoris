@@ -9,6 +9,7 @@ try:
     from pprint import pprint
     from rich.console import Console
     from rich.table import Table
+    from rich.panel import Panel
 except Exception as e:
     pass
 
@@ -340,10 +341,11 @@ class Meteo:
             return data[month]
 
     @classmethod
-    def get_main_message(cls, links=False):
+    def get_main_message(cls, print_=False, links=False):
         """
         Get the main message of website
         """
+        print_ = print_
         cls.check_internet()
         URL = "http://metservice.intnet.mu"
         r = requests.get(URL, headers=cls.headers)
@@ -353,7 +355,21 @@ class Meteo:
 
         if links:
             message_links = [(link.text.strip(), link.get('href')) for link in message.find_all('a')]
+            if print_:
+                console = Console()
+                table = Table(title='Info')
+                table.add_column('Message')
+                table.add_column('Link')
+                for l in message_links:
+                    table.add_row(l[0], l[1])
+                console.print(table)
             return message_links
+
+
+        if print_:
+            console = Console()
+            console.print(Panel(message.text.strip(), title="Meteo message"))
+            return 
         return message.text.strip()
 
     @classmethod
