@@ -233,7 +233,8 @@ class Meteo:
         return return_data
 
     @classmethod
-    def get_moonphase(cls, month=None):
+    def get_moonphase(cls, print=False, month=None):
+        print_ = print
         cls.check_internet()
         URL = "http://metservice.intnet.mu/sun-moon-and-tides-moon-phase.php"
         r = requests.get(URL, headers=cls.headers)
@@ -297,9 +298,45 @@ class Meteo:
                         "minute": m1_min
                         }
 
+        if print_:
+            console = Console()
+            table = Table()
+            table.add_column('Month', justify="left", style="magenta", no_wrap=True)
+            table.add_column('New Moon', justify="left", style="magenta", no_wrap=True)
+            table.add_column('First Quarter', justify="left", style="magenta", no_wrap=True)
+            table.add_column('Full Moon', justify="left", style="magenta", no_wrap=True)
+            table.add_column('Last Quarter', justify="left", style="magenta", no_wrap=True)
+
+        def get_moon_str(d, key):
+            try:
+                return '{}, {}:{}'.format(d[key]['date'], str(d[key]['hour']).zfill(2), str(d[key]['minute']).zfill(2))
+            except KeyError:
+                return ''
         if month is None:
+            
+            if print_:
+                for k, d in data.items():
+                    nm = get_moon_str(d, 'new moon')
+                    fq = get_moon_str(d, 'first quarter')
+                    fm = get_moon_str(d, 'full moon')
+                    lq = get_moon_str(d, 'last quarter')
+                    table.add_row(k, nm, fq, fm, lq)
+
+                console.print(table)
+                return
+
             return data
         else:
+            if print_:
+                d = data[month]
+                nm = get_moon_str(d, 'new moon')
+                fq = get_moon_str(d, 'first quarter')
+                fm = get_moon_str(d, 'full moon')
+                lq = get_moon_str(d, 'last quarter')
+                table.add_row(month, nm, fq, fm, lq)
+
+                console.print(table)
+                return
             return data[month]
 
     @classmethod
