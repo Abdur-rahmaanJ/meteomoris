@@ -135,14 +135,16 @@ class Meteo:
             table.add_column("Condition", justify="left")
             table.add_column("Sea condition", justify="left")
             table.add_column("Wind", justify="left", no_wrap=True)
+            table.add_column("Probability", justify="left")
 
 
         if day is None:
             return_data = week
+
             if print_:
                 table.title = 'Week forecast'
                 for d in return_data:
-                    table.add_row(d['day'], d['date'], d['min'], d['max'], d['condition'], d['sea condition'], d['wind'])
+                    table.add_row(d['day'], d['date'], d['min'], d['max'], d['condition'], d['sea condition'], d['wind'], d['probability'])
                 console.print(table)
                 return
         else:
@@ -151,14 +153,15 @@ class Meteo:
             if print_:
                 table.title = 'Day forecast'
                 d = return_data
-                table.add_row(d['day'], d['date'], d['min'], d['max'], d['condition'], d['sea condition'], d['wind'])
+                table.add_row(d['day'], d['date'], d['min'], d['max'], d['condition'], d['sea condition'], d['wind'], d['probability'])
                 console.print(table)
                 return
 
         return return_data
 
     @classmethod
-    def get_cityforecast(cls, day=None):
+    def get_cityforecast(cls, print=False, day=None):
+        print_ = print
         cls.check_internet()
         # for city of PL
 
@@ -193,12 +196,39 @@ class Meteo:
 
             week.append(return_dict)
 
+
+        if print_:
+            console = Console()
+            table = Table()
+            table.add_column("Day", justify="left", style="magenta", no_wrap=True)
+            table.add_column("Date", justify="left", no_wrap=True)
+            table.add_column("Min", justify="left", no_wrap=True)
+            table.add_column("Max", justify="left", no_wrap=True)
+            table.add_column("Condition", justify="left")
+            table.add_column("Wind", justify="left", no_wrap=True)
+
         return_data = {}
 
         if day is None:
             return_data = week
+
+            if print_:
+                table.title = 'Week forecast'
+                for d in return_data:
+                    table.add_row(d['day'], d['date'], d['min'], d['max'], d['condition'], d['wind'])
+                console.print(table)
+                return
         else:
             return_data = week[day]
+
+            if print_:
+                table.title = 'Day forecast'
+                d = return_data
+                
+                table.add_row(d['day'], d['date'], d['min'], d['max'], d['condition'], d['wind'])
+                console.print(table)
+                return
+            
 
         return return_data
 
