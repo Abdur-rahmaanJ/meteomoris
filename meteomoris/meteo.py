@@ -528,120 +528,53 @@ class Meteo:
         data = {'eclipses':[]}
         year = None
         eclipse_info = {}
+        all_tables = []
+        equinoxes = []
+        cls.print(str(len(tables)))
         for table_index, table in enumerate(tables):
-            table_body = table.find("tbody")
+            current_list = table.text.strip().split('\n')
+            current_list = [e for e in current_list if bool(e.strip())]
+            if table_index == 0:
+                pass 
 
-            rows = table_body.find_all("tr")
-            for i, row in enumerate(rows):
-                cols = row.find_all("td")
+            elif table_index == len(tables)-1:
+                equinoxes = current_list
+            else:
+                
+                all_tables += current_list
 
-                cols = [ele.text.strip() for ele in cols]
+        all_infos = []
+        for table_index, row in enumerate(all_tables):
+            info = {}
+            if (
+                ('eclipse of the' in row.casefold()) and
+                ('-' in row.casefold())
+                ):
+                info['info'] = row.split(' - ')[0].strip()
+                info['date'] = row.split(' - ')[1].strip()
 
-                if table_index == len_tables - 1:
-                    # ['EQUINOXES and SOLSTICES - 2022']
-                    # ['Equinoxes\xa0\xa0\xa0 :March 20 at 19h33 and September 23 at 05h03.']
-                    # ['Solstices\xa0\xa0\xa0 :June 21 at 13h13 and December 22 at 01h48.']
+                next_row = all_tables[table_index+1]
 
-                    if i == 0:
-                        year = cols[0].split('-')[1].strip()
-                        year = int(year)
-                    else:
-                        split_at_colon = cols[0].split(':')
-                        label = split_at_colon[0].strip().lower()
-                        dates = split_at_colon[1].split('and')
-                        date1 = dates[0].strip().split('at')
-                        date2 = dates[1].strip().split('at')
+                next_row_words = next_row.split()
+                for i, word in enumerate(next_row_words):
+                    if word == 'begins':
+                        if next_row_words[i+1] == 'on':
+                            info['begin_date'] = next_row_words[i+2]
+                            info['begin_month'] = next_row_words[i+3]
+                            info['begin_time'] = next_row_words[i+5]
+                    if word == 'ends':
+                        if next_row_words[i+1] == 'on':
+                            info['end_date'] = next_row_words[i+2]
+                            info['end_month'] = next_row_words[i+3]
+                            info['end_time'] = next_row_words[i+5]
+                        elif next_row_words[i+1] == 'at':
+                            info['end_date'] = info['begin_date']
+                            info['end_month'] = info['begin_month']
+                            info['end_time'] = next_row_words[i+2]
 
-                        data[label] = [
-                                {
-                                    'day': int(date1[0].strip().split()[1]),
-                                    'month': date1[0].strip().split()[0].lower(),
-                                    'year': year,
-                                    'hour': int(date1[1].strip().split('h')[0]),
-                                    'minute': int(date1[1].strip().split('h')[1].strip('.'))
-                                },
-                                {
-                                    'day': int(date2[0].strip().split()[1]),
-                                    'month': date2[0].strip().split()[0].lower(),
-                                    'year': year,
-                                    'hour': int(date2[1].strip().split('h')[0]),
-                                    'minute': int(date2[1].strip().split('h')[1].strip('.'))
-                                },
-                            ]
-                else:
-                    
-                    if len(cols) == 1:
-                        
-                        # ['Total eclipse of the Moon - November 08']
-                        # ['The eclipse begins on 08 November at 12h02 and ends at 17h56.']
-                        # ['The eclipse will not be visible in Mauritius, Rodrigues, St. Brandon and Agalega.']
-                        
-                        
-                        if i == 0:
-                            eclipse_info['status'] = cols[0].split('-')[0].strip().split()[0].lower()
-                            eclipse_info['type'] = cols[0].split('-')[0].strip().split()[-1].lower()
-
-                        elif i == 1:
-                            data_part = cols[0][len('The eclipse begins on '):].strip('.')
-                            data_list = data_part.split()
-
-                            if len(data_list) == 8:   
-                                # 08 November at 12h02 and ends at 17h56
-                                date = int(data_list[0])
-                                month = data_list[1].lower()
-                                start_hour = int(data_list[3].split('h')[0])
-                                start_minute = int(data_list[3].split('h')[1])
-                                end_hour = int(data_list[7].split('h')[0])
-                                end_minute = int(data_list[7].split('h')[1])
-
-                                eclipse_info['start'] = {
-                                    'date': date,
-                                    'month': month,
-                                    'hour': start_hour,
-                                    'minute': start_minute
-                                }
-                                eclipse_info['end'] = {
-                                    'date': date,
-                                    'month': month,
-                                    'hour': end_hour,
-                                    'minute': end_minute
-                                }
-
-
-                            else:
-                                # 30 April at 22h45 and ends on 01 May at 02h37
-                                date = int(data_list[0])
-                                month = data_list[1].lower()
-                                start_hour = int(data_list[3].split('h')[0])
-                                start_minute = int(data_list[3].split('h')[1])
-                                end_date = int(data_list[7])
-                                end_month = data_list[8].lower()
-                                end_hour = int(data_list[10].split('h')[0])
-                                end_minute = int(data_list[10].split('h')[1])
-
-                                eclipse_info['start'] = {
-                                    'date': date,
-                                    'month': month,
-                                    'hour': start_hour,
-                                    'minute': start_minute
-                                }
-                                eclipse_info['end'] = {
-                                    'date': end_date,
-                                    'month': end_month,
-                                    'hour': end_hour,
-                                    'minute': end_minute
-                                }
-
-
-                        elif i == 2:
-                            eclipse_info['info'] = cols[0]
-
-                            data['eclipses'].append(eclipse_info)
-
-                            eclipse_info = {}
-
-        return data
-
+                all_infos.append(info)
+        cls.print(all_infos)
+        # In progress
     @classmethod
     def get_eclipses(cls):
         return cls.get_eclipses_raw()['eclipses']
