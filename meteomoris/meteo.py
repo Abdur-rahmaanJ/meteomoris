@@ -263,6 +263,20 @@ class Meteo:
         return message.text.strip()
 
     @classmethod
+    def get_special_whether_bulletin(cls):
+        cls.check_internet()
+
+        URL = "http://metservice.intnet.mu/warning-bulletin-special-weather.php"
+        r = requests.get(URL, headers=cls.headers)
+        soup = BeautifulSoup(r.content, "html.parser")
+
+        message = soup.find("div", attrs={"class": "left_content"})
+        unwanted = message.find('div', attrs={"class": "warning"})
+        unwanted.extract()
+
+        return message.text.strip()
+
+    @classmethod
     def get_eclipse_text(cls):
         """small function to scrape the eclipse data from a website"""
 
