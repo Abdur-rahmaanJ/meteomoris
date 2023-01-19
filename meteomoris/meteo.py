@@ -449,7 +449,8 @@ class Meteo:
         return data
 
     @classmethod
-    def get_sunriserodr(cls):
+    def get_sunriserodr(cls, print=False):
+        print_ = print
         cls.check_internet()
         URL = "http://metservice.intnet.mu/sun-moon-and-tides-sunrise-sunset-rodrigues.php"
         r = requests.get(URL, headers=cls.headers)
@@ -481,6 +482,25 @@ class Meteo:
                     data[month1][date] = {"rise": m1_rise, "set": m1_set}
                 if m2_rise and m2_set:
                     data[month2][date] = {"rise": m2_rise, "set": m2_set}
+        def get_sun_info(data, month, date, point):
+            try:
+                return '{}'.format(data[month][date][point])
+            except:
+                return ''
+        if print_:
+            console = Console()
+            table = Table(title='Sunrise (Rodrigues)')
+
+            table.add_column('', justify="left", no_wrap=True)
+            months = list(data.keys())
+            for m in months:
+                table.add_column(m, justify="left", no_wrap=True)
+
+            for i in range(1, 32):
+                table.add_row(str(i).zfill(2), get_sun_info(data, months[0], i, 'rise'), get_sun_info(data, months[1], i, 'set'))
+
+            console.print(table)
+            return 
 
         return data
 

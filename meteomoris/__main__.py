@@ -1,5 +1,5 @@
 import click
-
+from meteomoris import *
 
 @click.group()
 def cli():
@@ -10,6 +10,21 @@ def cli():
 def dashboard():
     print("---")
 
+@cli.command(help="Week forecast")
+def forecast():
+    get_weekforecast(print=True)
+
+@cli.command(help="Sunrise (Mauritius)")
+def sunrisemu():
+    get_sunrisemu(print=True)
+
+@cli.command(help="Sunrise (Rodrigues)")
+def sunriserodr():
+    get_sunriserodr(print=True)
+
+@cli.command(help="Sunrise (Rodrigues)")
+def message():
+    get_main_message(print=True)
 
 def main():
     cli(obj={})
