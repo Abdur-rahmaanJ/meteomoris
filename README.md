@@ -178,6 +178,7 @@ Commands:
   dashboard
   forecast     Week forecast
   message      Message of the day
+  moonphase    Moonphase
   sunrisemu    Sunrise (Mauritius)
   sunriserodr  Sunrise (Rodrigues)
 ```

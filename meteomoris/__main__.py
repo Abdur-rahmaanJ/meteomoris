@@ -22,6 +22,11 @@ def sunrisemu():
 def sunriserodr():
     get_sunriserodr(print=True)
 
+
+@cli.command(help="Moonphase")
+def moonphase():
+    get_moonphase(print=True)
+
 @cli.command(help="Message of the day")
 @click.option("--links", is_flag=True, show_default=True, default=False, help="Show message links")
 def message(links):
