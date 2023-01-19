@@ -8,6 +8,7 @@ try:
     from bs4 import BeautifulSoup
     from pprint import pprint
     from rich.console import Console
+    from rich.table import Table
 except Exception as e:
     pass
 
@@ -76,7 +77,8 @@ class Meteo:
                     sys.exit()
 
     @classmethod
-    def get_weekforecast(cls, day=None):
+    def get_weekforecast(cls, day=None, print=False):
+        print_ = print
         cls.check_internet()
 
         URL = "http://metservice.intnet.mu"
@@ -123,10 +125,35 @@ class Meteo:
 
         return_data = {}
 
+        if print_:
+            console = Console()
+            table = Table()
+            table.add_column("Day", justify="left", style="magenta", no_wrap=True)
+            table.add_column("Date", justify="left", no_wrap=True)
+            table.add_column("Min", justify="left", no_wrap=True)
+            table.add_column("Max", justify="left", no_wrap=True)
+            table.add_column("Condition", justify="left")
+            table.add_column("Sea condition", justify="left")
+            table.add_column("Wind", justify="left", no_wrap=True)
+
+
         if day is None:
             return_data = week
+            if print_:
+                table.title = 'Week forecast'
+                for d in return_data:
+                    table.add_row(d['day'], d['date'], d['min'], d['max'], d['condition'], d['sea condition'], d['wind'])
+                console.print(table)
+                return
         else:
             return_data = week[day]
+
+            if print_:
+                table.title = 'Day forecast'
+                d = return_data
+                table.add_row(d['day'], d['date'], d['min'], d['max'], d['condition'], d['sea condition'], d['wind'])
+                console.print(table)
+                return
 
         return return_data
 
