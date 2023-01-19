@@ -246,7 +246,7 @@ class Meteo:
             return data[month]
 
     @classmethod
-    def get_main_message(cls):
+    def get_main_message(cls, links=False):
         """
         Get the main message of website
         """
@@ -256,6 +256,10 @@ class Meteo:
         soup = BeautifulSoup(r.content, "html.parser")
 
         message = soup.find("div", attrs={"class": "warning"})
+
+        if links:
+            message_links = [(link.text.strip(), link.get('href')) for link in message.find_all('a')]
+            return message_links
         return message.text.strip()
 
     @classmethod
