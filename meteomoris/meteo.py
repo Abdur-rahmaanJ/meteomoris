@@ -10,6 +10,8 @@ try:
     from rich.console import Console
     from rich.table import Table
     from rich.panel import Panel
+
+    console = Console()
 except Exception as e:
     pass
 
@@ -20,7 +22,7 @@ import sys
 #     r = requests.get(url, allow_redirects=True)
 #     open(path, 'wb').write(r.content)
 
-console = Console()
+
 
 def internet_present(exit=False):
     console = Console()
