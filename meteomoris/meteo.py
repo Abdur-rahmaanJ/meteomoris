@@ -10,8 +10,6 @@ try:
     from rich.console import Console
     from rich.table import Table
     from rich.panel import Panel
-
-    console = Console()
 except Exception as e:
     pass
 
@@ -56,6 +54,8 @@ class Meteo:
     EXIT_ON_NO_INTERNET = False
     CHECK_INTERNET = False
     DEBUG = False
+
+    console = Console()
     print = console.print
 
     headers = {
