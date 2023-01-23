@@ -205,7 +205,7 @@ Meteo.headers = {
          'Connection': 'keep-alive',
          'Upgrade-Insecure-Requests': '1'
      } # Redefine default headers here
-
+Meteo.DEBUG = True # during development
 print(get_main_message())
 ```
 # Installing

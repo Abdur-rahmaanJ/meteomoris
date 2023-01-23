@@ -53,6 +53,7 @@ class Meteo:
 
     EXIT_ON_NO_INTERNET = False
     CHECK_INTERNET = False
+    DEBUG = False
     print = console.print
 
     headers = {
@@ -562,7 +563,26 @@ class Meteo:
         ]
         '''
         eclipse_info = []
-        # cls.print(all_tables)
+        
+        if cls.DEBUG:
+            cls.print(all_tables)
+        '''
+        [
+            'Annular-Total eclipse of the Sun - April 20',
+            'The eclipse begins on 20 April at 05h34 and ends on 20 April at 10h59.',
+            'The penumbral part of the eclipse will be visible in Mauritius, Rodrigues, St. Brandon but will not be visible in 
+        Agalega.',
+            'Penumbral eclipse of the Moon - May 05',
+            'The eclipse begins on 05 May at 19h12 and ends at 23h33.',
+            'The eclipse will be visible in Mauritius, Rodrigues, St. Brandon and Agalega.',
+            'Annular eclipse of the Sun - October 14-15',
+            'The eclipse begins on 14 October at 19h04 and ends on 15 October at 00h55.',
+            'The eclipse will not be visible in Mauritius, Rodrigues, St. Brandon and Agalega.',
+            'Partial eclipse of the Moon - October 28-29',
+            'The eclipse begins on 28 October at 23h34 and ends on 29 October at 02h28.',
+            'The eclipse will be visible in Mauritius, Rodrigues, St. Brandon and Agalega.'
+        ]
+        '''
         for table_index, row in enumerate(all_tables):
             info = {}
             if (
@@ -602,6 +622,16 @@ class Meteo:
                             info['end']['time'] = next_row_words[i+2]
 
                 eclipse_info.append(info)
+
+        if cls.DEBUG:
+            cls.print(equinoxes)
+        '''
+        [
+            'EQUINOXES and SOLSTICES - 2023',
+            'Equinoxes\xa0\xa0\xa0 :\xa0 \xa0March 21 at 01h24 and September 23 at 10h50.',
+            'Solstices\xa0\xa0\xa0 :\xa0 \xa0June 21 at 18h57 and December 22 at 07h27.'
+        ]
+        '''
         equinox = [e.strip().casefold().strip('.') for e in equinoxes[1].split()]
         solstice = [e.strip().casefold().strip('.') for e in equinoxes[2].split()]
         year = equinoxes[0].split(' - ')[1].strip().casefold()
