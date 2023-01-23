@@ -247,7 +247,7 @@ Run
 
 # Changelog
 
-## 2.3.1
+## 2.3.3
 
 -  Fix broken install
 

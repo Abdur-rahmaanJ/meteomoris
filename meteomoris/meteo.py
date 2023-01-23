@@ -10,6 +10,7 @@ try:
     from rich.console import Console
     from rich.table import Table
     from rich.panel import Panel
+    import datetime
 except Exception as e:
     pass
 
@@ -265,7 +266,7 @@ class Meteo:
             if i == 0: # first row
                 month1 = cols[0].lower()
                 month2 = cols[1].lower()
-                data = {month1: {}, month2: {}}
+                data = {month1.casefold(): {}, month2.casefold(): {}}
 
             elif (1 < i < 6): # 3rd row and above
                 m1_phase = cols[0]
@@ -723,3 +724,22 @@ class Meteo:
     @classmethod
     def get_solstices(cls):
         return cls.get_eclipses_raw()['solstices']
+
+
+    @classmethod
+    def get_today(cls):
+        '''
+        All info for today
+
+        Check week forecast from today
+        Check moonphase info
+        Check solstice, eclipse and equinox
+        Print sunrise and sunset
+        '''
+        day = datetime.now().day
+        month = datetime.now().month
+        year = datetime.now().year
+
+
+        forecast = cls.get_weekforecast(day=0)
+        moonphase = cls.get_moonphase()['{}'.format()]
