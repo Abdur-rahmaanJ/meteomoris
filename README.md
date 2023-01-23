@@ -247,6 +247,9 @@ Run
 
 # Changelog
 
+## 2.2.1
+
+- Fix get_moonphase bug
 
 ## 2.2.0
 

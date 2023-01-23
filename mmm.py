@@ -1,4 +1,4 @@
 from meteomoris import * 
 
 
-print(get_moonphase())
+print(get_eclipses_raw())

@@ -530,7 +530,7 @@ class Meteo:
         eclipse_info = {}
         all_tables = []
         equinoxes = []
-        cls.print(str(len(tables)))
+        # cls.print(str(len(tables)))
         for table_index, table in enumerate(tables):
             current_list = table.text.strip().split('\n')
             current_list = [e for e in current_list if bool(e.strip())]
@@ -542,16 +542,42 @@ class Meteo:
             else:
                 
                 all_tables += current_list
-
-        all_infos = []
+        '''
+        [
+         {
+            'end': {'date': 1, 'hour': 2, 'minute': 37, 'month': 'may'},
+            'info': 'The eclipse will not be visible in Mauritius, Rodrigues, St. Brandon and Agalega.',
+            'start': {'date': 30, 'hour': 22, 'minute': 45, 'month': 'april'},
+            'status': 'partial',
+            'type': 'sun'
+         },
+         ...
+         {
+            'end': {'date': 8, 'hour': 17, 'minute': 56, 'month': 'november'},
+            'info': 'The eclipse will not be visible in Mauritius, Rodrigues, St. Brandon and Agalega.',
+            'start': {'date': 8, 'hour': 12, 'minute': 2, 'month': 'november'},
+            'status': 'total',
+            'type': 'moon'
+         }
+        ]
+        '''
+        eclipse_info = []
+        # cls.print(all_tables)
         for table_index, row in enumerate(all_tables):
             info = {}
             if (
                 ('eclipse of the' in row.casefold()) and
                 ('-' in row.casefold())
                 ):
-                info['info'] = row.split(' - ')[0].strip()
-                info['date'] = row.split(' - ')[1].strip()
+                info['title'] = row.split(' - ')[0].strip()
+                info['info'] = all_tables[table_index+2]
+                if 'sun' in info['title'].casefold():
+                    info['type'] = 'sun'
+                elif 'moon' in info['title'].casefold():
+                    info['type'] = 'moon'
+                info['status'] = info['title'].casefold().split()[0].strip()
+
+                # info['date'] = row.split(' - ')[1].strip()
 
                 next_row = all_tables[table_index+1]
 
@@ -559,22 +585,95 @@ class Meteo:
                 for i, word in enumerate(next_row_words):
                     if word == 'begins':
                         if next_row_words[i+1] == 'on':
-                            info['begin_date'] = next_row_words[i+2]
-                            info['begin_month'] = next_row_words[i+3]
-                            info['begin_time'] = next_row_words[i+5]
+                            info['start'] = {}
+                            info['start']['date'] = next_row_words[i+2]
+                            info['start']['month'] = next_row_words[i+3]
+                            info['start']['time'] = next_row_words[i+5]
                     if word == 'ends':
                         if next_row_words[i+1] == 'on':
-                            info['end_date'] = next_row_words[i+2]
-                            info['end_month'] = next_row_words[i+3]
-                            info['end_time'] = next_row_words[i+5]
+                            info['end'] = {}
+                            info['end']['date'] = next_row_words[i+2]
+                            info['end']['month'] = next_row_words[i+3]
+                            info['end']['time'] = next_row_words[i+5]
                         elif next_row_words[i+1] == 'at':
-                            info['end_date'] = info['begin_date']
-                            info['end_month'] = info['begin_month']
-                            info['end_time'] = next_row_words[i+2]
+                            info['end'] = {}
+                            info['end']['date'] = info['start']['date']
+                            info['end']['month'] = info['start']['month']
+                            info['end']['time'] = next_row_words[i+2]
 
-                all_infos.append(info)
-        cls.print(all_infos)
-        # In progress
+                eclipse_info.append(info)
+        equinox = [e.strip().casefold().strip('.') for e in equinoxes[1].split()]
+        solstice = [e.strip().casefold().strip('.') for e in equinoxes[2].split()]
+        year = equinoxes[0].split(' - ')[1].strip().casefold()
+        year = int(year)
+        '''
+
+        >>> get_equinoxes()
+        [
+         {
+            'day': 20, 'hour': 19, 'minute': 33, 'month': 'march', 'year': 2022
+         },
+         {
+          'day': 23, 'hour': 5, 'minute': 3, 'month': 'september', 'year': 2022
+         }
+        ]
+
+        >>> get_solstices()
+        [
+         {
+            'day': 21, 'hour': 13, 'minute': 13, 'month': 'june', 'year': 2022
+         },
+         {
+            'day': 22, 'hour': 1, 'minute': 48, 'month': 'december', 'year': 2022
+         }
+        ]'''
+        equinox_info = None
+        for i, e in enumerate(equinox):
+            if e == 'and':
+                equinox_info = [
+                {
+                    'day': int(equinox[i-3]),
+                    'month': equinox[i-4],
+                    'year': year,
+                    'hour': int(equinox[i-1].split('h')[0]),
+                    'minute': int(equinox[i-1].split('h')[1]),
+                },
+                {
+                    'day': int(equinox[i+2]),
+                    'month': equinox[i+1],
+                    'year': year,
+                    'hour': int(equinox[i+4].split('h')[0]),
+                    'minute': int(equinox[i+4].split('h')[1]),
+                },
+                ] 
+
+
+        solstice_info = None
+        for i, e in enumerate(equinox):
+            if e == 'and':
+                solstice_info = [
+                {
+                    'day': int(solstice[i-3]),
+                    'month': solstice[i-4],
+                    'year': year,
+                    'hour': int(solstice[i-1].split('h')[0]),
+                    'minute': int(solstice[i-1].split('h')[1]),
+                },
+                {
+                    'day': int(solstice[i+2]),
+                    'month': solstice[i+1],
+                    'year': year,
+                    'hour': int(solstice[i+4].split('h')[0]),
+                    'minute': int(solstice[i+4].split('h')[1]),
+                },
+                ] 
+
+        return {
+            'eclipses': eclipse_info,
+            'equinoxes': equinox_info,
+            'solstices': solstice_info
+        }
+
     @classmethod
     def get_eclipses(cls):
         return cls.get_eclipses_raw()['eclipses']
