@@ -763,8 +763,8 @@ class Meteo:
         day_ = 22
         month_ = 'january'
 
-        day = day_ 
-        month = month_
+        # day = day_ 
+        # month = month_
 
         col_elems = []
 

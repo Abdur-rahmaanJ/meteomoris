@@ -181,6 +181,8 @@ Commands:
   moonphase    Moonphase
   sunrisemu    Sunrise (Mauritius)
   sunriserodr  Sunrise (Rodrigues)
+  today        Today's info
+
 ```
 
 # Global settings

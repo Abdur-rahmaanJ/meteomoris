@@ -27,6 +27,14 @@ def sunriserodr():
 def moonphase():
     get_moonphase(print=True)
 
+@cli.command(help="Today's info")
+@click.option("--rodr", is_flag=True, show_default=True, default=False, help="Show for rodrigues")
+def today(rodr):
+    if not rodr:
+        Meteo.print_today()
+    else:
+        Meteo.print_today(country='rodr')
+
 @cli.command(help="Message of the day")
 @click.option("--links", is_flag=True, show_default=True, default=False, help="Show message links")
 def message(links):
