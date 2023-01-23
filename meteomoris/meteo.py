@@ -55,8 +55,12 @@ class Meteo:
     CHECK_INTERNET = False
     DEBUG = False
 
-    console = Console()
-    print = console.print
+    try:
+        # thanks pypa for broken tricks like this
+        console = Console()
+        print = console.print
+    except:
+        pass
 
     headers = {
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:32.0) Gecko/20100101 Firefox/32.0",

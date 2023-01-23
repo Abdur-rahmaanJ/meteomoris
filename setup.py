@@ -32,7 +32,7 @@ if sys.argv[-1] == "publish":  # requests
     print('[x] Package can be built')
     print('[ ] Uploading package')
     os.system("twine upload dist/* --skip-existing")
-    print('[x] Package uploaded!')
+    print('[x] Package upload process initiated')
     sys.exit()
 
 requires = [
