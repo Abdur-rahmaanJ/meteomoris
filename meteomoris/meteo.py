@@ -760,8 +760,8 @@ class Meteo:
 
         # cls.print(forecast)
 
-        day_ = 22
-        month_ = 'january'
+        # day_ = 22
+        # month_ = 'january'
 
         # day = day_ 
         # month = month_
@@ -777,7 +777,7 @@ class Meteo:
 
 
         for phase in moonphase:
-            if moonphase[phase]['date'] == day_:
+            if moonphase[phase]['date'] == day:
                 elements = []
                 elements.extend([
                 phase.title(), 'today at', 
@@ -867,11 +867,17 @@ class Meteo:
         eclipse_panel = Panel(eclipse_string, expand=True, title="Eclipse")
         moonphase_panel = Panel(moonphase_string, expand=True, title="Moon phase")
         condition_panel = Panel(forecast["condition"], expand=True, title="Contition")
+        
         sun_panel = Panel('rises at {}\nsets at {}'.format(sun['rise'], sun['set']), expand=True, title="Sun")
         
+        messages = ['{}  {}'.format(l[0], l[1]) for l in cls.get_main_message(links=True)]
+        message_panel = Panel('\n'.join(messages), expand=True, title='Message')
+        
+        grid.add_row('', message_panel,'')
         grid.add_row(temp_panel, wind_panel, sea_panel)
         grid.add_row(moonphase_panel, condition_panel, sun_panel)
         grid.add_row(solstice_panel, eclipse_panel, equinox_panel)
+        
 
         cls.print(
             Panel(

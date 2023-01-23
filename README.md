@@ -249,6 +249,11 @@ Run
 
 # Changelog
 
+
+## 2.4.0
+
+-  Add today info
+
 ## 2.3.3
 
 -  Fix broken install
