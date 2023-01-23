@@ -24,8 +24,15 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 
 if sys.argv[-1] == "publish":  # requests
+    print('[ ] Checking if package installs without errors', flush=True)
+    os.system("python -m pip install -e .")
+    print('[x] No error detected during package install')
+    print('[ ] Building package')
     os.system("python setup.py sdist")  # bdist_wheel
+    print('[x] Package can be built')
+    print('[ ] Uploading package')
     os.system("twine upload dist/* --skip-existing")
+    print('[x] Package uploaded!')
     sys.exit()
 
 requires = [
