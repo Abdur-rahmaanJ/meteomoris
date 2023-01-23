@@ -247,6 +247,11 @@ Run
 
 # Changelog
 
+## 2.3.0
+
+- Fix get_eclipse_raw bug
+- Add debug mode
+
 ## 2.2.1
 
 - Fix get_moonphase bug
