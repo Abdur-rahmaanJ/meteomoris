@@ -8,9 +8,11 @@ try:
     from bs4 import BeautifulSoup
     from pprint import pprint
     from rich.console import Console
+    from rich.columns import Columns
     from rich.table import Table
     from rich.panel import Panel
     import datetime
+    import calendar
 except Exception as e:
     pass
 
@@ -613,20 +615,23 @@ class Meteo:
                     if word == 'begins':
                         if next_row_words[i+1] == 'on':
                             info['start'] = {}
-                            info['start']['date'] = next_row_words[i+2]
-                            info['start']['month'] = next_row_words[i+3]
-                            info['start']['time'] = next_row_words[i+5]
+                            info['start']['date'] = int(next_row_words[i+2])
+                            info['start']['month'] = next_row_words[i+3].casefold()
+                            info['start']['hour'] = int(next_row_words[i+5].split('h')[0].strip('.'))
+                            info['start']['minute'] = int(next_row_words[i+5].split('h')[1].strip('.'))
                     if word == 'ends':
                         if next_row_words[i+1] == 'on':
                             info['end'] = {}
-                            info['end']['date'] = next_row_words[i+2]
-                            info['end']['month'] = next_row_words[i+3]
-                            info['end']['time'] = next_row_words[i+5]
+                            info['end']['date'] = int(next_row_words[i+2])
+                            info['end']['month'] = next_row_words[i+3].casefold()
+                            info['end']['hour'] = int(next_row_words[i+5].split('h')[0].strip('.'))
+                            info['end']['minute'] = int(next_row_words[i+5].split('h')[1].strip('.'))
                         elif next_row_words[i+1] == 'at':
                             info['end'] = {}
-                            info['end']['date'] = info['start']['date']
-                            info['end']['month'] = info['start']['month']
-                            info['end']['time'] = next_row_words[i+2]
+                            info['end']['date'] = int(info['start']['date'])
+                            info['end']['month'] = info['start']['month'].casefold()
+                            info['end']['hour'] = int(next_row_words[i+2].split('h')[0].strip('.'))
+                            info['end']['minute'] = int(next_row_words[i+2].split('h')[1].strip('.'))
 
                 eclipse_info.append(info)
 
@@ -727,7 +732,7 @@ class Meteo:
 
 
     @classmethod
-    def get_today(cls):
+    def print_today(cls, country='mu'):
         '''
         All info for today
 
@@ -736,10 +741,143 @@ class Meteo:
         Check solstice, eclipse and equinox
         Print sunrise and sunset
         '''
-        day = datetime.now().day
-        month = datetime.now().month
-        year = datetime.now().year
+        if country not in ['mu', 'rodr']:
+            cls.print('[red]Country should be mu or rodr[/red]')
 
+        day = datetime.datetime.now().day
+        month = calendar.month_name[datetime.datetime.now().month].casefold()
+        year = datetime.datetime.now().year
+        # cls.print(day)
+        # cls.print(year)
+        # cls.print(month)
 
         forecast = cls.get_weekforecast(day=0)
-        moonphase = cls.get_moonphase()['{}'.format()]
+        moonphase = cls.get_moonphase()['{} {}'.format(month, year)]
+        if country == 'mu':
+            sun = cls.get_sunrisemu()[month][day]
+        else:
+            sun = cls.get_sunriserodr()[month][day]
+
+        # cls.print(forecast)
+
+        day_ = 22
+        month_ = 'january'
+
+        day = day_ 
+        month = month_
+
+        col_elems = []
+
+
+        # temp_str = '{}-{}'.format(forecast["min"], forecast["max"])
+        # col_elems.append(Panel(temp_str, expand=False, title="Temperature"))
+
+        # col_elems.append(Panel(forecast["wind"], expand=False, title="Wind"))
+        # col_elems.append(Panel(forecast["sea condition"], expand=False, title="Sea condition"))
+
+
+        for phase in moonphase:
+            if moonphase[phase]['date'] == day_:
+                elements = []
+                elements.extend([
+                phase.title(), 'today at', 
+                    '[green]{}:{}[/green]'.format(
+                        moonphase[phase]['hour'], moonphase[phase]['minute'])
+                    ])
+
+                moonphase_string = ' '.join(elements)
+                break
+
+            else:
+                moonphase_string = ''
+
+
+        eclipse_elements = []
+        for eclipse in cls.get_eclipses():
+            
+
+            if (
+                eclipse['start']['date'] == day and
+                eclipse['start']['month'] == month):
+                
+                eclipse_elements.extend([eclipse['title'], 'starts today at', 
+                    '[green]{}:{}[/green]'.format(eclipse['start']['hour'], eclipse['start']['minute']),
+                    eclipse['info']])
+
+
+
+            if (
+                eclipse['end']['date'] == day and
+                eclipse['end']['month'] == month):
+
+                eclipse_elements.extend([
+                    '\n',
+                    eclipse['title'], 'ends today at', 
+                    '[green]{}:{}[/green]'.format(eclipse['end']['hour'], eclipse['end']['minute']),
+                    eclipse['info']
+                    ]) 
+
+
+        eclipse_string = ' '.join(eclipse_elements).replace('\n ', '\n')
+            # col_elems.append(Panel(string, expand=True, title="Eclipse"))
+
+
+        for equinox in cls.get_equinoxes():
+            if (
+                equinox['day'] == day and 
+                equinox['month'] == month 
+                ):
+                elements = []
+                elements.extend([
+                'Equinox today at', '[green]{}:{}[/green]'.format(equinox['hour'], equinox['minute'])
+                ])
+
+                equinox_string = ' '.join(elements)
+            else:
+                equinox_string = ''    
+
+        for solstice in cls.get_solstices():
+            if (
+                solstice['day'] == day and 
+                solstice['month'] == month 
+                ):
+                elements = []
+                elements.extend([
+                    'Solstice today at', '[green]{}:{}[/green]'.format(solstice['hour'], solstice['minute'])
+                    ])
+
+
+                solstice_string = ' '.join(elements)
+            else:
+                solstice_string = ''
+  
+        
+        grid = Table.grid()
+        grid.add_column()
+        grid.add_column()
+        grid.add_column()
+        temp_str = '{}-{}'.format(forecast["min"], forecast["max"])
+        temp_panel = Panel(temp_str, expand=True, title="Temperature")
+
+        wind_panel = Panel(forecast["wind"], expand=True, title="Wind")
+        sea_panel = Panel(forecast["sea condition"], expand=True, title="Sea condition")
+
+        solstice_panel = Panel(solstice_string, expand=True, title="Solstice")
+        equinox_panel = Panel(equinox_string, expand=True, title="Equinox")
+        eclipse_panel = Panel(eclipse_string, expand=True, title="Eclipse")
+        moonphase_panel = Panel(moonphase_string, expand=True, title="Moon phase")
+        condition_panel = Panel(forecast["condition"], expand=True, title="Contition")
+        sun_panel = Panel('rises at {}\nsets at {}'.format(sun['rise'], sun['set']), expand=True, title="Sun")
+        
+        grid.add_row(temp_panel, wind_panel, sea_panel)
+        grid.add_row(moonphase_panel, condition_panel, sun_panel)
+        grid.add_row(solstice_panel, eclipse_panel, equinox_panel)
+
+        cls.print(
+            Panel(
+            grid,
+            expand=True,
+            title="Today"
+            )
+            )
+
