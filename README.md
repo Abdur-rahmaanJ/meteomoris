@@ -247,6 +247,10 @@ Run
 
 # Changelog
 
+## 2.3.1
+
+-  Fix broken install
+
 ## 2.3.0
 
 - Fix get_eclipse_raw bug
