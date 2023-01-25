@@ -1,4 +1,4 @@
 from meteomoris import * 
 
 
-Meteo.print_today()
+print(Meteo.get_special_weather_bulletin())

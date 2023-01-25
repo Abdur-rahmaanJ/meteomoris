@@ -377,7 +377,7 @@ class Meteo:
         return message.text.strip()
 
     @classmethod
-    def get_special_whether_bulletin(cls):
+    def get_special_weather_bulletin(cls):
         cls.check_internet()
 
         URL = "http://metservice.intnet.mu/warning-bulletin-special-weather.php"
