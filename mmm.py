@@ -1,4 +1,4 @@
 from meteomoris import * 
 
 
-print(Meteo.get_special_weather_bulletin())
+Meteo.get_special_weather_bulletin(print=True)

@@ -27,6 +27,10 @@ def sunriserodr():
 def moonphase():
     get_moonphase(print=True)
 
+@cli.command(help="Special weather bulletin")
+def special():
+    get_special_weather_bulletin(print=True)
+
 @cli.command(help="Today's info")
 @click.option("--rodr", is_flag=True, show_default=True, default=False, help="Show for rodrigues")
 def today(rodr):

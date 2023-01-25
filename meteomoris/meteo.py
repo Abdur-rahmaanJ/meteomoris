@@ -377,7 +377,8 @@ class Meteo:
         return message.text.strip()
 
     @classmethod
-    def get_special_weather_bulletin(cls):
+    def get_special_weather_bulletin(cls, print=False):
+        print_ = print
         cls.check_internet()
 
         URL = "http://metservice.intnet.mu/warning-bulletin-special-weather.php"
@@ -388,7 +389,14 @@ class Meteo:
         unwanted = message.find('div', attrs={"class": "warning"})
         unwanted.extract()
 
-        return message.text.strip()
+        data = message.text.strip()
+
+        if print_:
+            cls.print(
+                Panel(data)
+                )
+            return
+        return data
 
     @classmethod
     def get_eclipse_text(cls):
