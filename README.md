@@ -162,8 +162,32 @@ dict_keys(['february', 'march'])
     'day': 22, 'hour': 1, 'minute': 48, 'month': 'december', 'year': 2022
  }
 ]
-
-
+>>> get_tides()
+{
+    'months': {
+        'january': {
+            1: ['09:27', '59', '23:37', '58', '03:27', '41', '16:55', '30'],
+            ...
+        },
+        'february': {
+            1: ['00:36', '63', '10:49', '58', '06:12', '49', '18:21', '28'],
+            ...
+        }
+    },
+    'year': 2023,
+    'month_format': {
+        'date': [
+            '1st High Tide (Time (Local))',
+            '1st High Tide (Height (cm))',
+            '2nd High Tide (Time (Local))',
+            '2nd High Tide (Height (cm))',
+            '1st Low Tide (Time (Local))',
+            '1st Low Tide (Height (cm))',
+            '2nd Low Tide (Time (Local))',
+            '2nd Low Tide (Height (cm))'
+        ]
+    }
+}
 ```
 
 # Cli
@@ -179,6 +203,7 @@ Commands:
   forecast     Week forecast
   message      Message of the day
   moonphase    Moonphase
+  special      Special weather bulletin
   sunrisemu    Sunrise (Mauritius)
   sunriserodr  Sunrise (Rodrigues)
   today        Today's info

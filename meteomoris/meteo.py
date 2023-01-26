@@ -777,13 +777,6 @@ class Meteo:
         col_elems = []
 
 
-        # temp_str = '{}-{}'.format(forecast["min"], forecast["max"])
-        # col_elems.append(Panel(temp_str, expand=False, title="Temperature"))
-
-        # col_elems.append(Panel(forecast["wind"], expand=False, title="Wind"))
-        # col_elems.append(Panel(forecast["sea condition"], expand=False, title="Sea condition"))
-
-
         for phase in moonphase:
             if moonphase[phase]['date'] == day:
                 elements = []
@@ -878,7 +871,7 @@ class Meteo:
         
         sun_panel = Panel('rises at {}\nsets at {}'.format(sun['rise'], sun['set']), expand=True, title="Sun")
         
-        messages = ['{}  {}'.format(l[0], l[1]) for l in cls.get_main_message(links=True)]
+        messages = ['[bold]{}[/bold]  {}'.format(l[0], l[1]) for l in cls.get_main_message(links=True)]
         message_panel = Panel('\n'.join(messages), expand=True, title='Message')
         
         grid.add_row('', message_panel,'')
@@ -895,3 +888,62 @@ class Meteo:
             )
             )
 
+    @classmethod
+    def get_tides(cls, print=False):
+        print_ = print
+
+        URL = "http://metservice.intnet.mu/sun-moon-and-tides-tides-mauritius.php"
+        r = requests.get(URL, headers=cls.headers)
+        soup = BeautifulSoup(r.content, "html.parser")
+        h2s = soup.find_all("h2")
+        tables = soup.find_all("table")
+
+        tide_info = None
+
+        month1 = tables[0]
+        month2 = tables[1]
+        
+        month1 = [e.strip() for e in month1.text.strip().split('\n') if e.strip()]
+        month1 = month1[13:]
+
+        month2 = [e.strip() for e in month2.text.strip().split('\n') if e.strip()]
+        month2 = month2[14:]
+
+        h2txts = [h2.text for h2 in h2s]
+        h2txt = ' '.join(h2txts)
+
+        month1_name = h2txt.casefold().split(' for ')[1].split()[0]
+        month2_name = h2txt.casefold().split(' for ')[1].split()[2]
+        year = int(h2txt.casefold().split(' for ')[1].split()[3])
+
+        cls.print(month1)
+        tide_info = {
+            'months': {
+                month1_name: {},
+                month2_name: {}
+            },
+            'year': year,
+            'month_format': {
+                'date': [
+                '1st High Tide (Time (Local))', 
+                '1st High Tide (Height (cm))',
+                '2nd High Tide (Time (Local))', 
+                '2nd High Tide (Height (cm))',
+                '1st Low Tide (Time (Local))', 
+                '1st Low Tide (Height (cm))',
+                '2nd Low Tide (Time (Local))', 
+                '2nd Low Tide (Height (cm))',
+                ]
+            }
+        }
+
+        # cls.print(tide_info)
+        for i, e in enumerate(month1):
+            if ((i) % 9) == 0:
+                tide_info['months'][month1_name][int(e)] = month1[i+1:i+9]
+
+        for i, e in enumerate(month2):
+            if ((i) % 9) == 0:
+                tide_info['months'][month2_name][int(e)] = month2[i+1:i+9]
+
+        cls.print(tide_info)
