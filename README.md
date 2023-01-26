@@ -188,6 +188,22 @@ dict_keys(['february', 'march'])
         ]
     }
 }
+>>> get_rainfall()
+{
+    'info': 'last 6 hours till 10h00',
+    'rain': {
+        'Rose-Belle': '31 mm',
+        'Mon Bois': '32 mm',
+        'Vacoas': '29 mm',
+        'Moka': '29 mm',
+        'Providence': '21 mm',
+        'Domaine les Pailles': '22 mm',
+        'Beau Bassin': '23 mm',
+        'Port Louis': '13 mm',
+        'St Felix': '16 mm'
+    }
+}
+
 ```
 
 # Cli
@@ -274,6 +290,11 @@ Run
 
 # Changelog
 
+
+## 2.6.0
+
+- Add tide
+- Add rainfall
 
 ## 2.4.0
 

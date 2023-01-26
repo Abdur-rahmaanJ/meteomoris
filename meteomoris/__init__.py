@@ -15,5 +15,7 @@ get_eclipses_raw = Meteo.get_eclipses_raw
 get_eclipses = Meteo.get_eclipses
 get_equinoxes = Meteo.get_equinoxes
 get_solstices = Meteo.get_solstices
+get_tides = Meteo.get_tides
+get_rainfall = Meteo.get_rainfall
 
-__version__ = "2.4.2"
+__version__ = "2.6.0"

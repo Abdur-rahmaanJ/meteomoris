@@ -858,7 +858,7 @@ class Meteo:
         grid.add_column()
         grid.add_column()
         grid.add_column()
-        temp_str = '{}-{}'.format(forecast["min"], forecast["max"])
+        temp_str = '[b]{}-{}[/]'.format(forecast["min"], forecast["max"])
         temp_panel = Panel(temp_str, expand=True, title="Temperature")
 
         wind_panel = Panel(forecast["wind"], expand=True, title="Wind")
@@ -875,29 +875,75 @@ class Meteo:
         messages = ['[bold]{}[/bold]  {}'.format(l[0], l[1]) for l in cls.get_main_message(links=True)]
         message_panel = Panel('\n'.join(messages), expand=True, title='Message')
 
-
-
+        ###
+        #
+        # Tides
+        #
+        ###
 
         tides_all = cls.get_tides()
 
         tides = tides_all['months'][month][day]
-        tides_str = '\n'.join([
-            '{}: {}'.format(tides_all['month_format']['date'][0], tides[0]),
-            '{}: {}'.format(tides_all['month_format']['date'][1], tides[1]),
-            '{}: {}'.format(tides_all['month_format']['date'][2], tides[2]),
-            '{}: {}'.format(tides_all['month_format']['date'][3], tides[3]),
-            '{}: {}'.format(tides_all['month_format']['date'][4], tides[4]),
-            '{}: {}'.format(tides_all['month_format']['date'][5], tides[5]),
-            '{}: {}'.format(tides_all['month_format']['date'][6], tides[6]),
-            '{}: {}'.format(tides_all['month_format']['date'][7], tides[7]),
-        ])
-        tides_panel = Panel(tides_str, expand=True, title='Tides')
+        tidetable = Table()
+
+        tidetable.add_column("", justify="left", style="slate_blue3", no_wrap=True)
+        tidetable.add_column("Time", justify="left", style="gold3", no_wrap=True)
+        tidetable.add_column("Height", style="dark_cyan")
+
+        # tides_str = '\n'.join([
+        #     '{}: {}'.format(tides_all['month_format']['date'][0], tides[0]),
+        #     '{}: {}'.format(tides_all['month_format']['date'][1], tides[1]),
+        #     '{}: {}'.format(tides_all['month_format']['date'][2], tides[2]),
+        #     '{}: {}'.format(tides_all['month_format']['date'][3], tides[3]),
+        #     '{}: {}'.format(tides_all['month_format']['date'][4], tides[4]),
+        #     '{}: {}'.format(tides_all['month_format']['date'][5], tides[5]),
+        #     '{}: {}'.format(tides_all['month_format']['date'][6], tides[6]),
+        #     '{}: {}'.format(tides_all['month_format']['date'][7], tides[7]),
+        # ])
+
+
+        tidetable.add_row('1st high tide', tides[0], tides[1])
+        tidetable.add_row('2nd high tide', tides[2], tides[3])
+        tidetable.add_row('1st low tide', tides[4], tides[5])
+        tidetable.add_row('2nd low tide', tides[6], tides[7])
+        tides_panel = Panel(tidetable, expand=True, title='Tides')
+
+
+        ###
+        #
+        # Rainfall
+        #
+        ###
+
+
+        rainfall = cls.get_rainfall()
+
+        rainfall_info_str = '{}'.format(rainfall['info'])
+        rainfall_region_str = '\n'.join([
+            '{}: {}'.format(r, a) for r, a in rainfall['rain'].items()
+            ])
+
+        rtable = Table(title=rainfall_info_str)
+
+        rtable.add_column("Region", justify="left", style="slate_blue3", no_wrap=True)
+        rtable.add_column("Rain", style="dark_cyan")
+
+        for r, a in rainfall['rain'].items():
+            rtable.add_row(r, a)
+
+        rainfall_panel = Panel(rtable, expand=True, title="Rainfall")
+
+        ###
+        #
+        # Grid
+        #
+        ###
         
         grid.add_row('', message_panel,'')
         grid.add_row(temp_panel, wind_panel, sea_panel)
-        grid.add_row(tides_panel, condition_panel, sun_panel)
-        grid.add_row(moonphase_panel, solstice_panel, eclipse_panel)
-        grid.add_row(equinox_panel, '', '')
+        grid.add_row(moonphase_panel, condition_panel, sun_panel)
+        grid.add_row(rainfall_panel, solstice_panel, tides_panel)
+        grid.add_row(equinox_panel, eclipse_panel, '')
         
 
         cls.print(
