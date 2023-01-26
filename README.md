@@ -294,7 +294,7 @@ Run
 ## 2.6.0
 
 - Add tide
-- Add rainfall
+- Add rainfall 
 
 ## 2.4.0
 
