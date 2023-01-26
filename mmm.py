@@ -1,4 +1,4 @@
 from meteomoris import * 
 
 
-Meteo.get_rainfall()
+print(Meteo.get_rainfall())

@@ -976,6 +976,26 @@ class Meteo:
         r = requests.get(URL, headers=cls.headers)
         soup = BeautifulSoup(r.content, "html.parser")
 
-        content = soup.find_all("div", attrs={'class': 'left_content'})
+        content = soup.find("div", attrs={'class': 'left_content'})
 
-        cls.print(content.text)
+        content = [c for c in content.text.strip().split('\n') if c.strip()]
+
+        info = None
+        data = {}
+        for line in content:
+            if 'highest rainfall' in line.casefold():
+                info = line.split('during the')[1].strip()[:-len(' today:')]
+            if (
+                ('mm' in line) and
+                (':' in line) 
+                ):
+                region = line.strip().split(':')[0].strip()
+                rain = line.strip().split(':')[1].strip()
+                data[region] = rain
+
+        rainfall_data = {
+            'info': info,
+            'rain': data
+        }
+
+        return rainfall_data
