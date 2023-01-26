@@ -765,6 +765,7 @@ class Meteo:
             sun = cls.get_sunrisemu()[month][day]
         else:
             sun = cls.get_sunriserodr()[month][day]
+        
 
         # cls.print(forecast)
 
@@ -873,11 +874,30 @@ class Meteo:
         
         messages = ['[bold]{}[/bold]  {}'.format(l[0], l[1]) for l in cls.get_main_message(links=True)]
         message_panel = Panel('\n'.join(messages), expand=True, title='Message')
+
+
+
+
+        tides_all = cls.get_tides()
+
+        tides = tides_all['months'][month][day]
+        tides_str = '\n'.join([
+            '{}: {}'.format(tides_all['month_format']['date'][0], tides[0]),
+            '{}: {}'.format(tides_all['month_format']['date'][1], tides[1]),
+            '{}: {}'.format(tides_all['month_format']['date'][2], tides[2]),
+            '{}: {}'.format(tides_all['month_format']['date'][3], tides[3]),
+            '{}: {}'.format(tides_all['month_format']['date'][4], tides[4]),
+            '{}: {}'.format(tides_all['month_format']['date'][5], tides[5]),
+            '{}: {}'.format(tides_all['month_format']['date'][6], tides[6]),
+            '{}: {}'.format(tides_all['month_format']['date'][7], tides[7]),
+        ])
+        tides_panel = Panel(tides_str, expand=True, title='Tides')
         
         grid.add_row('', message_panel,'')
         grid.add_row(temp_panel, wind_panel, sea_panel)
-        grid.add_row(moonphase_panel, condition_panel, sun_panel)
-        grid.add_row(solstice_panel, eclipse_panel, equinox_panel)
+        grid.add_row(tides_panel, condition_panel, sun_panel)
+        grid.add_row(moonphase_panel, solstice_panel, eclipse_panel)
+        grid.add_row(equinox_panel, '', '')
         
 
         cls.print(
@@ -916,7 +936,6 @@ class Meteo:
         month2_name = h2txt.casefold().split(' for ')[1].split()[2]
         year = int(h2txt.casefold().split(' for ')[1].split()[3])
 
-        cls.print(month1)
         tide_info = {
             'months': {
                 month1_name: {},
@@ -946,4 +965,17 @@ class Meteo:
             if ((i) % 9) == 0:
                 tide_info['months'][month2_name][int(e)] = month2[i+1:i+9]
 
-        cls.print(tide_info)
+        return tide_info
+
+
+    @classmethod
+    def get_rainfall(cls, print=False):
+        print_ = print
+
+        URL = "http://metservice.intnet.mu/forecast-bulletin-english-mauritius.php"
+        r = requests.get(URL, headers=cls.headers)
+        soup = BeautifulSoup(r.content, "html.parser")
+
+        content = soup.find_all("div", attrs={'class': 'left_content'})
+
+        cls.print(content.text)

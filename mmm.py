@@ -1,4 +1,4 @@
 from meteomoris import * 
 
 
-Meteo.get_tides()
+Meteo.get_rainfall()
