@@ -915,20 +915,17 @@ class Meteo:
         #
         ###
 
-
-        rainfall = cls.get_rainfall()
+        latest = cls.get_latest()
+        rainfall = latest['rainfall24h']
 
         rainfall_info_str = '{}'.format(rainfall['info'])
-        rainfall_region_str = '\n'.join([
-            '{}: {}'.format(r, a) for r, a in rainfall['rain'].items()
-            ])
 
         rtable = Table(title=rainfall_info_str)
 
         rtable.add_column("Region", justify="left", style="slate_blue3")
         rtable.add_column("Rain", style="dark_cyan")
 
-        for r, a in rainfall['rain'].items():
+        for r, a in rainfall['data'].items():
             rtable.add_row(r, a)
 
         rainfall_panel = Panel(rtable, expand=True, title="Rainfall")
@@ -1083,7 +1080,7 @@ class Meteo:
             else:
                 key = 'rainfall24h'
             infos[key] = {
-                'title': title,
+                'info': title,
                 'data': {}
             }
             trs = table.find_all('tr')
