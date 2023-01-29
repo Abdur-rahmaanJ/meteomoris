@@ -191,7 +191,7 @@ dict_keys(['february', 'march'])
 >>> get_latest()
 {
     'rainfall24h': {
-        'title': 'Rainfall in (mm) from 28 January 2023 10 PM  to 29 January 2023 10 PM',
+        'info': 'Rainfall in (mm) from 28 January 2023 10 PM  to 29 January 2023 10 PM',
         'data': {
             'Albion': '',
             ...
@@ -199,7 +199,7 @@ dict_keys(['february', 'march'])
         }
     },
     'rainfall3hrs': {
-        'title': 'Last 3hrs Rainfall in (mm) on 29 January 2023 10 PM.',
+        'info': 'Last 3hrs Rainfall in (mm) on 29 January 2023 10 PM.',
         'data': {
             'Albion': '',
             ...
@@ -207,7 +207,7 @@ dict_keys(['february', 'march'])
         }
     },
     'wind': {
-        'title': 'Maximum wind speed (km/h) for the last 24 hours until 29 January 2023',
+        'info': 'Maximum wind speed (km/h) for the last 24 hours until 29 January 2023',
         'data': {
             'Albion': '',
             ...
@@ -215,7 +215,7 @@ dict_keys(['february', 'march'])
         }
     },
     'humidity': {
-        'title': 'Humidity at 10 AM on 29 January 2023',
+        'info': 'Humidity at 10 AM on 29 January 2023',
         'data': {
             'Albion': '',
             ...
@@ -223,7 +223,7 @@ dict_keys(['february', 'march'])
         }
     },
     'minmaxtemp': {
-        'title': 'Maximum and minimum temperatures for the last 24 hours until 29 January 2023',
+        'info': 'Maximum and minimum temperatures for the last 24 hours until 29 January 2023',
         'data': {
             'Albion': {'min': '', 'max': ''},
             ...

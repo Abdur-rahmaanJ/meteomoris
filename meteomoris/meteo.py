@@ -886,9 +886,9 @@ class Meteo:
         tides = tides_all['months'][month][day]
         tidetable = Table()
 
-        tidetable.add_column("", justify="left", style="slate_blue3", no_wrap=True)
+        tidetable.add_column("Tide", justify="left", style="slate_blue3", no_wrap=True)
         tidetable.add_column("Time", justify="left", style="gold3", no_wrap=True)
-        tidetable.add_column("Height", style="dark_cyan")
+        tidetable.add_column("Height (mm)", style="dark_cyan")
 
         # tides_str = '\n'.join([
         #     '{}: {}'.format(tides_all['month_format']['date'][0], tides[0]),
@@ -902,10 +902,10 @@ class Meteo:
         # ])
 
 
-        tidetable.add_row('1st high tide', tides[0], tides[1])
-        tidetable.add_row('2nd high tide', tides[2], tides[3])
-        tidetable.add_row('1st low tide', tides[4], tides[5])
-        tidetable.add_row('2nd low tide', tides[6], tides[7])
+        tidetable.add_row('1st high', tides[0], tides[1])
+        tidetable.add_row('2nd high', tides[2], tides[3])
+        tidetable.add_row('1st low', tides[4], tides[5])
+        tidetable.add_row('2nd low', tides[6], tides[7])
         tides_panel = Panel(tidetable, expand=True, title='Tides')
 
 
@@ -916,19 +916,52 @@ class Meteo:
         ###
 
         latest = cls.get_latest()
+
         rainfall = latest['rainfall24h']
 
         rainfall_info_str = '{}'.format(rainfall['info'])
 
-        rtable = Table(title=rainfall_info_str)
+        rtable = Table()
 
         rtable.add_column("Region", justify="left", style="slate_blue3")
-        rtable.add_column("Rain", style="dark_cyan")
+        rtable.add_column("Rain 24hr", style="dark_cyan")
+        rtable.add_column("Rain 3hrs", style="dark_cyan")
+        rtable.add_column("Wind", style="dark_cyan")
+        rtable.add_column("Humidity", style="dark_cyan")
+        rtable.add_column("Min Max temp", style="dark_cyan")
 
         for r, a in rainfall['data'].items():
-            rtable.add_row(r, a)
+            if (latest['minmaxtemp']['data'][r]['min'] or latest['minmaxtemp']['data'][r]['max']):
+                minmaxtemp_str = '{} to {}'.format(latest['minmaxtemp']['data'][r]['min'], latest['minmaxtemp']['data'][r]['max'])
+            else:
+                minmaxtemp_str = ''
+            rtable.add_row(r, a, 
+                latest['rainfall3hrs']['data'][r],
+                latest['wind']['data'][r],
+                latest['humidity']['data'][r],
+                minmaxtemp_str
+                )
 
-        rainfall_panel = Panel(rtable, expand=True, title="Rainfall")
+        latest_panel = Panel(rtable, expand=True, title="Latest data")
+        titles = ['- {}\n'.format(v['info']) for k, v in latest.items()]
+        titles_str = ''.join(titles)
+        
+        rtable.title = titles_str
+
+
+        # rainfall3hrs = latest['rainfall3hrs']
+
+        # rainfall3hrs_info_str = '{}'.format(rainfall3hrs['info'])
+
+        # r3table = Table(title=rainfall3hrs_info_str)
+
+        # r3table.add_column("Region", justify="left", style="slate_blue3")
+        # r3table.add_column("Rain", style="dark_cyan")
+
+        # for r, a in rainfall3hrs['data'].items():
+        #     r3table.add_row(r, a)
+
+        # rainfall3hrs_panel = Panel(r3table, expand=True, title="Rainfall 3hrs")
 
         ###
         #
@@ -939,7 +972,7 @@ class Meteo:
         grid.add_row('', message_panel,'')
         grid.add_row(temp_panel, wind_panel, sea_panel)
         grid.add_row(moonphase_panel, condition_panel, sun_panel)
-        grid.add_row(rainfall_panel, solstice_panel, tides_panel)
+        grid.add_row(solstice_panel, latest_panel, tides_panel)
         grid.add_row(equinox_panel, eclipse_panel, '')
         
 
