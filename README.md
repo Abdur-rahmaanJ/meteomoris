@@ -188,19 +188,47 @@ dict_keys(['february', 'march'])
         ]
     }
 }
->>> get_rainfall()
+>>> get_latest()
 {
-    'info': 'last 6 hours till 10h00',
-    'rain': {
-        'Rose-Belle': '31 mm',
-        'Mon Bois': '32 mm',
-        'Vacoas': '29 mm',
-        'Moka': '29 mm',
-        'Providence': '21 mm',
-        'Domaine les Pailles': '22 mm',
-        'Beau Bassin': '23 mm',
-        'Port Louis': '13 mm',
-        'St Felix': '16 mm'
+    'rainfall24h': {
+        'title': 'Rainfall in (mm) from 28 January 2023 10 PM  to 29 January 2023 10 PM',
+        'data': {
+            'Albion': '',
+            ...
+            'Vacoas': '2.3'
+        }
+    },
+    'rainfall3hrs': {
+        'title': 'Last 3hrs Rainfall in (mm) on 29 January 2023 10 PM.',
+        'data': {
+            'Albion': '',
+            ...
+            'Vacoas': '0.5'
+        }
+    },
+    'wind': {
+        'title': 'Maximum wind speed (km/h) for the last 24 hours until 29 January 2023',
+        'data': {
+            'Albion': '',
+            ...
+            'Vacoas': '24'
+        }
+    },
+    'humidity': {
+        'title': 'Humidity at 10 AM on 29 January 2023',
+        'data': {
+            'Albion': '',
+            ...
+            'Vacoas': '72'
+        }
+    },
+    'minmaxtemp': {
+        'title': 'Maximum and minimum temperatures for the last 24 hours until 29 January 2023',
+        'data': {
+            'Albion': {'min': '', 'max': ''},
+            ...
+            'Vacoas': {'min': '22', 'max': '29'}
+        }
     }
 }
 
