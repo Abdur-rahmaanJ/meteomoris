@@ -318,6 +318,9 @@ Run
 
 # Changelog
 
+## 2.7.0
+
+- Add latest data in API + today
 
 ## 2.6.0
 
