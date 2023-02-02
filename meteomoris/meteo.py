@@ -968,12 +968,17 @@ class Meteo:
         # Grid
         #
         ###
-        
-        grid.add_row('', message_panel,'')
-        grid.add_row(temp_panel, wind_panel, sea_panel)
-        grid.add_row(moonphase_panel, condition_panel, sun_panel)
-        grid.add_row(solstice_panel, latest_panel, tides_panel)
-        grid.add_row(equinox_panel, eclipse_panel, '')
+        def add_row(grid, elements):
+            try:
+                grid.add_row(*elements)
+            except:
+                pass
+
+        add_row(grid, ['', message_panel,''])
+        add_row(grid, [temp_panel, wind_panel, sea_panel])
+        add_row(grid, [moonphase_panel, condition_panel, sun_panel])
+        add_row(grid, [solstice_panel, latest_panel, tides_panel])
+        add_row(grid, [equinox_panel, eclipse_panel, ''])
         
 
         cls.print(
@@ -1000,7 +1005,7 @@ class Meteo:
         month2 = tables[1]
         
         month1 = [e.strip() for e in month1.text.strip().split('\n') if e.strip()]
-        month1 = month1[13:]
+        month1 = month1[14:]
 
         month2 = [e.strip() for e in month2.text.strip().split('\n') if e.strip()]
         month2 = month2[14:]
@@ -1033,7 +1038,10 @@ class Meteo:
         }
 
         # cls.print(tide_info)
+        # cls.print(month1)
+        # cls.print(month2)
         for i, e in enumerate(month1):
+            # cls.print(i, e)
             if ((i) % 9) == 0:
                 tide_info['months'][month1_name][int(e)] = month1[i+1:i+9]
 
