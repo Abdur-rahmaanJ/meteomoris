@@ -18,4 +18,4 @@ get_solstices = Meteo.get_solstices
 get_tides = Meteo.get_tides
 get_latest = Meteo.get_latest
 
-__version__ = "2.7.0"
+__version__ = "2.7.1"
