@@ -266,8 +266,8 @@ class Meteo:
 
 
             if i == 0: # first row
-                month1 = cols[0].lower()
-                month2 = cols[1].lower()
+                month1 = ' '.join(cols[0].lower().split())
+                month2 = ' '.join(cols[1].lower().split())
                 data = {month1.casefold(): {}, month2.casefold(): {}}
 
             elif (1 < i < 6): # 3rd row and above
