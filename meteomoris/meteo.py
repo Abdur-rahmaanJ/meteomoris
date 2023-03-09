@@ -317,8 +317,8 @@ class Meteo:
                 return '{} at {}:{}'.format(d[key]['date'], str(d[key]['hour']).zfill(2), str(d[key]['minute']).zfill(2))
             except KeyError:
                 return ''
+
         if month is None:
-            
             if print_:
                 for k, d in data.items():
                     nm = get_moon_str(d, 'new moon')
@@ -755,12 +755,16 @@ class Meteo:
         day = datetime.datetime.now().day
         month = calendar.month_name[datetime.datetime.now().month].casefold()
         year = datetime.datetime.now().year
+        skip_moonphase = None
         # cls.print(day)
         # cls.print(year)
         # cls.print(month)
 
         forecast = cls.get_weekforecast(day=0)
-        moonphase = cls.get_moonphase()['{} {}'.format(month, year)]
+        try:
+            moonphase = cls.get_moonphase()['{} {}'.format(month, year)]
+        except:
+            skip_moonphase = True
         if country == 'mu':
             sun = cls.get_sunrisemu()[month][day]
         else:
@@ -777,21 +781,21 @@ class Meteo:
 
         col_elems = []
 
+        if not skip_moonphase:
+            for phase in moonphase:
+                if moonphase[phase]['date'] == day:
+                    elements = []
+                    elements.extend([
+                    phase.title(), 'today at', 
+                        '[green]{}:{}[/green]'.format(
+                            moonphase[phase]['hour'], moonphase[phase]['minute'])
+                        ])
 
-        for phase in moonphase:
-            if moonphase[phase]['date'] == day:
-                elements = []
-                elements.extend([
-                phase.title(), 'today at', 
-                    '[green]{}:{}[/green]'.format(
-                        moonphase[phase]['hour'], moonphase[phase]['minute'])
-                    ])
+                    moonphase_string = ' '.join(elements)
+                    break
 
-                moonphase_string = ' '.join(elements)
-                break
-
-            else:
-                moonphase_string = ''
+                else:
+                    moonphase_string = ''
 
 
         eclipse_elements = []
@@ -867,7 +871,11 @@ class Meteo:
         solstice_panel = Panel(solstice_string, expand=True, title="Solstice")
         equinox_panel = Panel(equinox_string, expand=True, title="Equinox")
         eclipse_panel = Panel(eclipse_string, expand=True, title="Eclipse")
-        moonphase_panel = Panel(moonphase_string, expand=True, title="Moon phase")
+
+        if not skip_moonphase:
+            moonphase_panel = Panel(moonphase_string, expand=True, title="Moon phase")
+        else:
+            moonphase_panel = Panel('Error fetching moonphase', expand=True, title="Moon phase")
         condition_panel = Panel(forecast["condition"], expand=True, title="Contition")
         
         sun_panel = Panel('rises at {}\nsets at {}'.format(sun['rise'], sun['set']), expand=True, title="Sun")
