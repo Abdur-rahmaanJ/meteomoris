@@ -1,0 +1,9 @@
+meteomoris (2.7.3) stable; urgency=medium
+
+  * fix package
+
+meteomoris (2.7.2) jammy; urgency=low
+
+  * Additional release.
+
+ -- Abdur-Rahmaan Janhangeer <arj.python@gmail.com>  Thu, 06 Jul 2023 14:46:00 -0400

@@ -1,0 +1,12 @@
+Source: meteomoris
+Maintainer: Abdur-Rahmaan Janhangeer <arj.python@gmail.com>
+Build-Depends: debhelper,dh-python,python3-all,python3-setuptools
+Section: devel
+Priority: optional
+Standards-Version: 3.9.6
+X-Python3-Version: >= 3.8
+
+Package: meteomoris
+Architecture: all
+Description: Mauritius weather on your command line!
+Depends: ${python3:Depends},python3-requests,python3-bs4,python3-rich,python3-click
