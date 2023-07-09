@@ -1005,33 +1005,47 @@ class Meteo:
         URL = "http://metservice.intnet.mu/sun-moon-and-tides-tides-mauritius.php"
         r = requests.get(URL, headers=cls.headers)
         soup = BeautifulSoup(r.content, "html.parser")
-        h2s = soup.find_all("h2")
         tables = soup.find_all("table")
+        #cls.print(len(tables))
+        if len(tables) == 1:
+            text_arr = tables[0].text.split()
+            text_arr_cleaned = []
+            months = []
+            years = []
+            month_names = [m.casefold() for m in calendar.month_name if m]
+            for t in text_arr:
+                if t.casefold() in month_names:
+                    months.append(t.casefold())
+                    text_arr_cleaned.append(t.casefold())
+                elif re.findall('\d\d\d\d', t):
+                    text_arr_cleaned.append(t.casefold())
+                    years.append(t)
+                elif ((t.casefold() not in ['date', '1st', '2nd', '(local)', '(height)',
+                                        'tide', 'low', 'high', 'time', 'height',
+                                        '(cm)']) 
+                    ):
+                    text_arr_cleaned.append(t)
 
-        tide_info = None
-
-        month1 = tables[0]
-        month2 = tables[1]
-        
-        month1 = [e.strip() for e in month1.text.strip().split('\n') if e.strip()]
-        month1 = month1[14:]
-
-        month2 = [e.strip() for e in month2.text.strip().split('\n') if e.strip()]
-        month2 = month2[14:]
-
-        h2txts = [h2.text for h2 in h2s]
-        h2txt = ' '.join(h2txts)
-
-        month1_name = h2txt.casefold().split(' for ')[1].split()[0]
-        month2_name = h2txt.casefold().split(' for ')[1].split()[2]
-        year = int(h2txt.casefold().split(' for ')[1].split()[3])
-
+        # cls.print(text_arr_cleaned)
+        #     [
+        # 'july',
+        # '2023',
+        # '1',
+        # '12:02',
+        # '54',
+        # '23:11',
+        # '57',
+        # '05:29',
+        # '6',
+        # '17:28',
+        # '28',
+        # '2',
+        # cls.print(months)
+        # cls.print(years)
         tide_info = {
             'months': {
-                month1_name: {},
-                month2_name: {}
+
             },
-            'year': year,
             'month_format': {
                 'date': [
                 '1st High Tide (Time (Local))', 
@@ -1043,21 +1057,33 @@ class Meteo:
                 '2nd Low Tide (Time (Local))', 
                 '2nd Low Tide (Height (cm))',
                 ]
+            },
+            'meta':{
+                'months':[]
             }
         }
-
+        for i, month in enumerate(months):
+            tide_info['meta']['months'].append([months[i], years[i]])
+        
+        tc_i = 0
+        current_month = None
+        month_pad = 0
+        while tc_i < len(text_arr_cleaned):
+            text = text_arr_cleaned[tc_i]
+            if text in month_names:
+                # current_month = f'{text_arr_cleaned[tc_i]}_{text_arr_cleaned[tc_i+1]}'
+                current_month = f'{text_arr_cleaned[tc_i]}'
+                tide_info['months'][current_month] = {}
+                month_pad += 1
+                tc_i += 2
+                continue 
+            else:
+                if (tc_i - (2 * month_pad)) % 9 == 0:
+                    date = int(text_arr_cleaned[tc_i])
+                    tide_info['months'][current_month][date] = text_arr_cleaned[tc_i+1:tc_i+9]
+                    tc_i += 8
+            tc_i += 1
         # cls.print(tide_info)
-        # cls.print(month1)
-        # cls.print(month2)
-        for i, e in enumerate(month1):
-            # cls.print(i, e)
-            if ((i) % 9) == 0:
-                tide_info['months'][month1_name][int(e)] = month1[i+1:i+9]
-
-        for i, e in enumerate(month2):
-            if ((i) % 9) == 0:
-                tide_info['months'][month2_name][int(e)] = month2[i+1:i+9]
-
         return tide_info
 
 
