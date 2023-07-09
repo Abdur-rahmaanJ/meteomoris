@@ -6,9 +6,9 @@ def cli():
     pass
 
 
-@cli.command()
-def dashboard():
-    print("---")
+# @cli.command()
+# def dashboard():
+#     print("---")
 
 @cli.command(help="Week forecast")
 def forecast():
