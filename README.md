@@ -330,6 +330,11 @@ Run
 
 # Changelog
 
+## 2.7.8
+
+- Fixes
+- Debian package published
+
 ## 2.7.0
 
 - Add latest data in API + today

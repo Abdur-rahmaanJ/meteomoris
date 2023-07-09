@@ -19,10 +19,3 @@ get_tides = Meteo.get_tides
 get_latest = Meteo.get_latest
 
 __version__ = "2.7.8"
-
-'''
-2.7.8
-
-- Fixes
-- Debian package published
-'''
