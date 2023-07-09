@@ -13,6 +13,7 @@ try:
     from rich.panel import Panel
     import datetime
     import calendar
+    import re
 except Exception as e:
     pass
 
@@ -439,8 +440,8 @@ class Meteo:
             cols = [ele.text.strip() for ele in cols]
 
             if i == 0:
-                month1 = cols[1].lower()
-                month2 = cols[2].lower()
+                month1 = re.sub('\d+', '', cols[1].lower()).strip()
+                month2 = re.sub('\d+', '', cols[2].lower()).strip()
                 data = {month1: {}, month2: {}}
 
             elif i > 1:

@@ -1,6 +1,20 @@
-meteomoris (2.7.3) stable; urgency=medium
+meteomoris (2.7.5) jammy; urgency=medium
 
   * fix package
+
+ -- Abdur-Rahmaan Janhangeer <arj.python@gmail.com>  Thu, 06 Jul 2023 16:37:00 -0400
+
+meteomoris (2.7.4) stable; urgency=medium
+
+  * fix package
+
+ -- Abdur-Rahmaan Janhangeer <arj.python@gmail.com>  Thu, 06 Jul 2023 16:34:00 -0400
+
+meteomoris (2.7.3) stable; urgency=low
+
+  * fix package
+
+ -- Abdur-Rahmaan Janhangeer <arj.python@gmail.com>  Thu, 06 Jul 2023 15:54:00 -0400
 
 meteomoris (2.7.2) jammy; urgency=low
 
