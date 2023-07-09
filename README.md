@@ -391,3 +391,13 @@ Run
 - Add get_sunrisemu
 - Add get_sunriserodr
 - Tests basics
+
+# Debian
+
+Example
+
+```
+~/code/meteomoris/$ debuild -k"<key id>" -S
+~/code/meteomoris/$ cd ..
+~/code/$ dput ppa:abdur-rahmaanj/meteomoris-ppa meteomoris_2.7.8_source.changes
+```
