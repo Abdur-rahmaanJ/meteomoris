@@ -8,6 +8,18 @@ pip install meteomoris
 
 Venv explanations at footer.
 
+# Ubuntu
+
+```
+sudo add-apt-repository ppa:abdur-rahmaanj/meteomoris-ppa
+sudo apt update
+sudo apt-get install meteomoris
+```
+
+# Important changes
+
+- year output removed from tides, added a meta label for year and month
+
 # Examples
 
 NOTE: Add `print=True` to get a tabular representation
@@ -174,7 +186,6 @@ dict_keys(['february', 'march'])
             ...
         }
     },
-    'year': 2023,
     'month_format': {
         'date': [
             '1st High Tide (Time (Local))',
@@ -186,7 +197,8 @@ dict_keys(['february', 'march'])
             '2nd Low Tide (Time (Local))',
             '2nd Low Tide (Height (cm))'
         ]
-    }
+    },
+    'meta': {'months': [['january', '2023'], ['feruary', '2023']]}
 }
 >>> get_latest()
 {
