@@ -243,7 +243,12 @@ dict_keys(['february', 'march'])
         }
     }
 }
-
+>>> get_uvindex()
+{
+    'vacoas': 'Extreme', 
+    'port-louis': 'Extreme', 
+    'plaisance': 'Low'
+}
 ```
 
 # Cli
