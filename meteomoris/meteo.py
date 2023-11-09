@@ -14,6 +14,7 @@ try:
     from rich.status import Status
     import datetime
     import calendar
+    import http.client as httplib
     import re
 except Exception as e:
     pass
@@ -27,36 +28,23 @@ import sys
 
 
 
-def internet_present(exit=False):
+def internet_present():
     console = Console()
-    domains = [
-        "https://google.com",
-        "https://yahoo.com",
-        "https://bing.com",
-        "https://www.ecosia.org",
-        "https://www.wikipedia.org",
-    ]
-    results = []
     with console.status("Checking internet ...", spinner="material"):
-        for domain in domains:
-            try:
-                requests.get(domain)
-                results.append(1)
-            except Exception as e:
-                results.append(0)
-
-    if not any(results):
-        # print('No internet connection')
-        if exit:
-            sys.exit()
-        return False
-    else:
-        return True
+    
+        conn = httplib.HTTPSConnection("8.8.8.8", timeout=5)
+        try:
+            conn.request("HEAD", "/")
+            return True
+        except Exception:
+            return False
+        finally:
+            conn.close()
 
 
 class Meteo:
 
-    EXIT_ON_NO_INTERNET = False
+    EXIT_ON_NO_INTERNET = True
     CHECK_INTERNET = False
     DEBUG = False
 
@@ -1205,6 +1193,7 @@ class Meteo:
     @classmethod
     def get_uvindex(cls, print=False):
         print_ = print
+        cls.check_internet()
 
         regions = ["vacoas", "port-louis", "plaisance", "triolet", "camp-diable", "centre-de-flacq",
                    "flic-en-flac", "tamarin", "rodrigues"]

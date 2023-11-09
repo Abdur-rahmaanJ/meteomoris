@@ -267,6 +267,7 @@ Commands:
   sunrisemu    Sunrise (Mauritius)
   sunriserodr  Sunrise (Rodrigues)
   today        Today's info
+  uvindex      Ultra Violet Index
 
 ```
 
@@ -333,6 +334,11 @@ Run
 `python -m pytest tests/`
 
 # Changelog
+
+## 2.8.0
+
+- uvindex
+- 
 
 ## 2.7.8
 
