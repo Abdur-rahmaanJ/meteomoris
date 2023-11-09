@@ -743,6 +743,7 @@ class Meteo:
 
     @classmethod
     def print_today(cls, country='mu'):
+        cls.check_internet()
         '''
         All info for today
 
@@ -1021,6 +1022,7 @@ class Meteo:
     @classmethod
     def get_tides(cls, print=False):
         print_ = print
+        cls.check_internet()
 
         URL = "http://metservice.intnet.mu/sun-moon-and-tides-tides-mauritius.php"
         r = requests.get(URL, headers=cls.headers)
@@ -1109,6 +1111,7 @@ class Meteo:
 
     @classmethod
     def get_rainfall(cls, print=False):
+        cls.check_internet()
         print_ = print
 
         URL = "http://metservice.intnet.mu/forecast-bulletin-english-mauritius.php"
@@ -1142,6 +1145,7 @@ class Meteo:
 
     @classmethod
     def get_latest(cls, print=False):
+        cls.check_internet()
         print_ = print
 
         URL = "http://metservice.intnet.mu/latest-weather-data.php"
