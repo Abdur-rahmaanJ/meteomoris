@@ -260,7 +260,6 @@ Options:
   --help  Show this message and exit.
 
 Commands:
-  dashboard
   forecast     Week forecast
   message      Message of the day
   moonphase    Moonphase
