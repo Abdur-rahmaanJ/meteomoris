@@ -11,8 +11,10 @@ try:
     from rich.columns import Columns
     from rich.table import Table
     from rich.panel import Panel
+    from rich.status import Status
     import datetime
     import calendar
+    import http.client as httplib
     import re
 except Exception as e:
     pass
@@ -26,36 +28,23 @@ import sys
 
 
 
-def internet_present(exit=False):
+def internet_present():
     console = Console()
-    domains = [
-        "https://google.com",
-        "https://yahoo.com",
-        "https://bing.com",
-        "https://www.ecosia.org",
-        "https://www.wikipedia.org",
-    ]
-    results = []
     with console.status("Checking internet ...", spinner="material"):
-        for domain in domains:
-            try:
-                requests.get(domain)
-                results.append(1)
-            except Exception as e:
-                results.append(0)
-
-    if not any(results):
-        # print('No internet connection')
-        if exit:
-            sys.exit()
-        return False
-    else:
-        return True
+    
+        conn = httplib.HTTPSConnection("8.8.8.8", timeout=5)
+        try:
+            conn.request("HEAD", "/")
+            return True
+        except Exception:
+            return False
+        finally:
+            conn.close()
 
 
 class Meteo:
 
-    EXIT_ON_NO_INTERNET = False
+    EXIT_ON_NO_INTERNET = True
     CHECK_INTERNET = False
     DEBUG = False
 
@@ -750,253 +739,272 @@ class Meteo:
         Check solstice, eclipse and equinox
         Print sunrise and sunset
         '''
-        if country not in ['mu', 'rodr']:
-            cls.print('[red]Country should be mu or rodr[/red]')
+        with cls.console.status("fetching", spinner="aesthetic") as status:
+            if country not in ['mu', 'rodr']:
+                cls.print('[red]Country should be mu or rodr[/red]')
 
-        day = datetime.datetime.now().day
-        month = calendar.month_name[datetime.datetime.now().month].casefold()
-        year = datetime.datetime.now().year
-        skip_moonphase = None
-        # cls.print(day)
-        # cls.print(year)
-        # cls.print(month)
+            day = datetime.datetime.now().day
+            month = calendar.month_name[datetime.datetime.now().month].casefold()
+            year = datetime.datetime.now().year
+            skip_moonphase = None
+            # cls.print(day)
+            # cls.print(year)
+            # cls.print(month)
 
-        forecast = cls.get_weekforecast(day=0)
-        try:
-            moonphase = cls.get_moonphase()['{} {}'.format(month, year)]
-        except:
-            skip_moonphase = True
-        if country == 'mu':
-            sun = cls.get_sunrisemu()[month][day]
-        else:
-            sun = cls.get_sunriserodr()[month][day]
-        
-
-        # cls.print(forecast)
-
-        # day_ = 22
-        # month_ = 'january'
-
-        # day = day_ 
-        # month = month_
-
-        col_elems = []
-
-        if not skip_moonphase:
-            for phase in moonphase:
-                if moonphase[phase]['date'] == day:
-                    elements = []
-                    elements.extend([
-                    phase.title(), 'today at', 
-                        '[green]{}:{}[/green]'.format(
-                            moonphase[phase]['hour'], moonphase[phase]['minute'])
-                        ])
-
-                    moonphase_string = ' '.join(elements)
-                    break
-
-                else:
-                    moonphase_string = ''
-
-
-        eclipse_elements = []
-        for eclipse in cls.get_eclipses():
+            forecast = cls.get_weekforecast(day=0)
+            try:
+                moonphase = cls.get_moonphase()['{} {}'.format(month, year)]
+            except:
+                skip_moonphase = True
+            if country == 'mu':
+                sun = cls.get_sunrisemu()[month][day]
+            else:
+                sun = cls.get_sunriserodr()[month][day]
             
 
-            if (
-                eclipse['start']['date'] == day and
-                eclipse['start']['month'] == month):
+            # cls.print(forecast)
+
+            # day_ = 22
+            # month_ = 'january'
+
+            # day = day_ 
+            # month = month_
+
+            col_elems = []
+
+            if not skip_moonphase:
+                for phase in moonphase:
+                    if moonphase[phase]['date'] == day:
+                        elements = []
+                        elements.extend([
+                        phase.title(), 'today at', 
+                            '[green]{}:{}[/green]'.format(
+                                moonphase[phase]['hour'], moonphase[phase]['minute'])
+                            ])
+
+                        moonphase_string = ' '.join(elements)
+                        break
+
+                    else:
+                        moonphase_string = ''
+
+
+            eclipse_elements = []
+            for eclipse in cls.get_eclipses():
                 
-                eclipse_elements.extend([eclipse['title'], 'starts today at', 
-                    '[green]{}:{}[/green]'.format(eclipse['start']['hour'], eclipse['start']['minute']),
-                    eclipse['info']])
+
+                if (
+                    eclipse['start']['date'] == day and
+                    eclipse['start']['month'] == month):
+                    
+                    eclipse_elements.extend([eclipse['title'], 'starts today at', 
+                        '[green]{}:{}[/green]'.format(eclipse['start']['hour'], eclipse['start']['minute']),
+                        eclipse['info']])
 
 
 
-            if (
-                eclipse['end']['date'] == day and
-                eclipse['end']['month'] == month):
+                if (
+                    eclipse['end']['date'] == day and
+                    eclipse['end']['month'] == month):
 
-                eclipse_elements.extend([
-                    '\n',
-                    eclipse['title'], 'ends today at', 
-                    '[green]{}:{}[/green]'.format(eclipse['end']['hour'], eclipse['end']['minute']),
-                    eclipse['info']
-                    ]) 
-
-
-        eclipse_string = ' '.join(eclipse_elements).replace('\n ', '\n')
-            # col_elems.append(Panel(string, expand=True, title="Eclipse"))
+                    eclipse_elements.extend([
+                        '\n',
+                        eclipse['title'], 'ends today at', 
+                        '[green]{}:{}[/green]'.format(eclipse['end']['hour'], eclipse['end']['minute']),
+                        eclipse['info']
+                        ]) 
 
 
-        for equinox in cls.get_equinoxes():
-            if (
-                equinox['day'] == day and 
-                equinox['month'] == month 
-                ):
-                elements = []
-                elements.extend([
-                'Equinox today at', '[green]{}:{}[/green]'.format(equinox['hour'], equinox['minute'])
-                ])
+            eclipse_string = ' '.join(eclipse_elements).replace('\n ', '\n')
+                # col_elems.append(Panel(string, expand=True, title="Eclipse"))
 
-                equinox_string = ' '.join(elements)
-            else:
-                equinox_string = ''    
 
-        for solstice in cls.get_solstices():
-            if (
-                solstice['day'] == day and 
-                solstice['month'] == month 
-                ):
-                elements = []
-                elements.extend([
-                    'Solstice today at', '[green]{}:{}[/green]'.format(solstice['hour'], solstice['minute'])
+            for equinox in cls.get_equinoxes():
+                if (
+                    equinox['day'] == day and 
+                    equinox['month'] == month 
+                    ):
+                    elements = []
+                    elements.extend([
+                    'Equinox today at', '[green]{}:{}[/green]'.format(equinox['hour'], equinox['minute'])
                     ])
 
+                    equinox_string = ' '.join(elements)
+                else:
+                    equinox_string = ''    
 
-                solstice_string = ' '.join(elements)
+            for solstice in cls.get_solstices():
+                if (
+                    solstice['day'] == day and 
+                    solstice['month'] == month 
+                    ):
+                    elements = []
+                    elements.extend([
+                        'Solstice today at', '[green]{}:{}[/green]'.format(solstice['hour'], solstice['minute'])
+                        ])
+
+
+                    solstice_string = ' '.join(elements)
+                else:
+                    solstice_string = ''
+            
+            uv_string = ''
+            for region, status in cls.get_uvindex().items():
+                region = region.replace('-', ' ').capitalize()
+                if status.lower() == "extreme":
+                    status = f"[blink]:fire: [red]{status}[/red][/blink]"
+                elif status.lower() == "very high":
+                    status = f"[red]{status}[/red]"
+                elif status.lower() == "high":
+                    status = f"[dark_orange3]{status}[/dark_orange3]"
+                elif status.lower() in ["medium", "moderate"]:
+                    status = f"[gold3]{status}[/gold3]"
+                elif status.lower() == "low":
+                    status = f"[green]{status}[/green]"
+                uv_string += f"[magenta]{region}[/magenta]: {status}\n"
+            uv_string.strip('\n')
+    
+            
+            grid = Table.grid()
+            grid.add_column()
+            grid.add_column()
+            grid.add_column()
+            temp_str = '[b]{}-{}[/]'.format(forecast["min"], forecast["max"])
+            temp_panel = Panel(temp_str, expand=True, title="Temperature")
+
+            wind_panel = Panel(forecast["wind"], expand=True, title="Wind")
+            sea_panel = Panel(forecast["sea condition"], expand=True, title="Sea condition")
+
+            solstice_panel = Panel(solstice_string, expand=True, title="Solstice")
+            equinox_panel = Panel(equinox_string, expand=True, title="Equinox")
+            eclipse_panel = Panel(eclipse_string, expand=True, title="Eclipse")
+            uv_panel = Panel(uv_string, expand=True, title="Ultra-Violet")
+
+            if not skip_moonphase:
+                moonphase_panel = Panel(moonphase_string, expand=True, title="Moon phase")
             else:
-                solstice_string = ''
-  
-        
-        grid = Table.grid()
-        grid.add_column()
-        grid.add_column()
-        grid.add_column()
-        temp_str = '[b]{}-{}[/]'.format(forecast["min"], forecast["max"])
-        temp_panel = Panel(temp_str, expand=True, title="Temperature")
+                moonphase_panel = Panel('Error fetching moonphase', expand=True, title="Moon phase")
+            condition_panel = Panel(forecast["condition"], expand=True, title="Contition")
+            
+            sun_panel = Panel('rises at {}\nsets at {}'.format(sun['rise'], sun['set']), expand=True, title="Sun")
+            
+            messages = ['[bold]{}[/bold]  {}'.format(l[0], l[1]) for l in cls.get_main_message(links=True)]
+            message_panel = Panel('\n'.join(messages), expand=True, title='Message')
 
-        wind_panel = Panel(forecast["wind"], expand=True, title="Wind")
-        sea_panel = Panel(forecast["sea condition"], expand=True, title="Sea condition")
+            ###
+            #
+            # Tides
+            #
+            ###
 
-        solstice_panel = Panel(solstice_string, expand=True, title="Solstice")
-        equinox_panel = Panel(equinox_string, expand=True, title="Equinox")
-        eclipse_panel = Panel(eclipse_string, expand=True, title="Eclipse")
+            tides_all = cls.get_tides()
 
-        if not skip_moonphase:
-            moonphase_panel = Panel(moonphase_string, expand=True, title="Moon phase")
-        else:
-            moonphase_panel = Panel('Error fetching moonphase', expand=True, title="Moon phase")
-        condition_panel = Panel(forecast["condition"], expand=True, title="Contition")
-        
-        sun_panel = Panel('rises at {}\nsets at {}'.format(sun['rise'], sun['set']), expand=True, title="Sun")
-        
-        messages = ['[bold]{}[/bold]  {}'.format(l[0], l[1]) for l in cls.get_main_message(links=True)]
-        message_panel = Panel('\n'.join(messages), expand=True, title='Message')
+            tides = tides_all['months'][month][day]
+            tidetable = Table()
 
-        ###
-        #
-        # Tides
-        #
-        ###
+            tidetable.add_column("Tide", justify="left", style="slate_blue3", no_wrap=True)
+            tidetable.add_column("Time", justify="left", style="gold3", no_wrap=True)
+            tidetable.add_column("Height (mm)", style="dark_cyan")
 
-        tides_all = cls.get_tides()
-
-        tides = tides_all['months'][month][day]
-        tidetable = Table()
-
-        tidetable.add_column("Tide", justify="left", style="slate_blue3", no_wrap=True)
-        tidetable.add_column("Time", justify="left", style="gold3", no_wrap=True)
-        tidetable.add_column("Height (mm)", style="dark_cyan")
-
-        # tides_str = '\n'.join([
-        #     '{}: {}'.format(tides_all['month_format']['date'][0], tides[0]),
-        #     '{}: {}'.format(tides_all['month_format']['date'][1], tides[1]),
-        #     '{}: {}'.format(tides_all['month_format']['date'][2], tides[2]),
-        #     '{}: {}'.format(tides_all['month_format']['date'][3], tides[3]),
-        #     '{}: {}'.format(tides_all['month_format']['date'][4], tides[4]),
-        #     '{}: {}'.format(tides_all['month_format']['date'][5], tides[5]),
-        #     '{}: {}'.format(tides_all['month_format']['date'][6], tides[6]),
-        #     '{}: {}'.format(tides_all['month_format']['date'][7], tides[7]),
-        # ])
+            # tides_str = '\n'.join([
+            #     '{}: {}'.format(tides_all['month_format']['date'][0], tides[0]),
+            #     '{}: {}'.format(tides_all['month_format']['date'][1], tides[1]),
+            #     '{}: {}'.format(tides_all['month_format']['date'][2], tides[2]),
+            #     '{}: {}'.format(tides_all['month_format']['date'][3], tides[3]),
+            #     '{}: {}'.format(tides_all['month_format']['date'][4], tides[4]),
+            #     '{}: {}'.format(tides_all['month_format']['date'][5], tides[5]),
+            #     '{}: {}'.format(tides_all['month_format']['date'][6], tides[6]),
+            #     '{}: {}'.format(tides_all['month_format']['date'][7], tides[7]),
+            # ])
 
 
-        tidetable.add_row('1st high', tides[0], tides[1])
-        tidetable.add_row('2nd high', tides[2], tides[3])
-        tidetable.add_row('1st low', tides[4], tides[5])
-        tidetable.add_row('2nd low', tides[6], tides[7])
-        tides_panel = Panel(tidetable, expand=True, title='Tides')
+            tidetable.add_row('1st high', tides[0], tides[1])
+            tidetable.add_row('2nd high', tides[2], tides[3])
+            tidetable.add_row('1st low', tides[4], tides[5])
+            tidetable.add_row('2nd low', tides[6], tides[7])
+            tides_panel = Panel(tidetable, expand=True, title='Tides')
 
 
-        ###
-        #
-        # Rainfall
-        #
-        ###
+            ###
+            #
+            # Rainfall
+            #
+            ###
 
-        latest = cls.get_latest()
+            latest = cls.get_latest()
 
-        rainfall = latest['rainfall24h']
+            rainfall = latest['rainfall24h']
 
-        rainfall_info_str = '{}'.format(rainfall['info'])
+            rainfall_info_str = '{}'.format(rainfall['info'])
 
-        rtable = Table()
+            rtable = Table()
 
-        rtable.add_column("Region", justify="left", style="slate_blue3")
-        rtable.add_column("Rain 24hr", style="dark_cyan")
-        rtable.add_column("Rain 3hrs", style="dark_cyan")
-        rtable.add_column("Wind", style="dark_cyan")
-        rtable.add_column("Humidity", style="dark_cyan")
-        rtable.add_column("Min Max temp", style="dark_cyan")
+            rtable.add_column("Region", justify="left", style="slate_blue3")
+            rtable.add_column("Rain 24hr", style="dark_cyan")
+            rtable.add_column("Rain 3hrs", style="dark_cyan")
+            rtable.add_column("Wind", style="dark_cyan")
+            rtable.add_column("Humidity", style="dark_cyan")
+            rtable.add_column("Min Max temp", style="dark_cyan")
 
-        for r, a in rainfall['data'].items():
-            if (latest['minmaxtemp']['data'][r]['min'] or latest['minmaxtemp']['data'][r]['max']):
-                minmaxtemp_str = '{} to {}'.format(latest['minmaxtemp']['data'][r]['min'], latest['minmaxtemp']['data'][r]['max'])
-            else:
-                minmaxtemp_str = ''
-            rtable.add_row(r, a, 
-                latest['rainfall3hrs']['data'][r],
-                latest['wind']['data'][r],
-                latest['humidity']['data'][r],
-                minmaxtemp_str
+            for r, a in rainfall['data'].items():
+                if (latest['minmaxtemp']['data'][r]['min'] or latest['minmaxtemp']['data'][r]['max']):
+                    minmaxtemp_str = '{} to {}'.format(latest['minmaxtemp']['data'][r]['min'], latest['minmaxtemp']['data'][r]['max'])
+                else:
+                    minmaxtemp_str = ''
+                rtable.add_row(r, a, 
+                    latest['rainfall3hrs']['data'][r],
+                    latest['wind']['data'][r],
+                    latest['humidity']['data'][r],
+                    minmaxtemp_str
+                    )
+
+            latest_panel = Panel(rtable, expand=True, title="Latest data")
+            titles = ['- {}\n'.format(v['info']) for k, v in latest.items()]
+            titles_str = ''.join(titles)
+            
+            rtable.title = titles_str
+
+
+            # rainfall3hrs = latest['rainfall3hrs']
+
+            # rainfall3hrs_info_str = '{}'.format(rainfall3hrs['info'])
+
+            # r3table = Table(title=rainfall3hrs_info_str)
+
+            # r3table.add_column("Region", justify="left", style="slate_blue3")
+            # r3table.add_column("Rain", style="dark_cyan")
+
+            # for r, a in rainfall3hrs['data'].items():
+            #     r3table.add_row(r, a)
+
+            # rainfall3hrs_panel = Panel(r3table, expand=True, title="Rainfall 3hrs")
+
+            ###
+            #
+            # Grid
+            #
+            ###
+            def add_row(grid, elements):
+                try:
+                    grid.add_row(*elements)
+                except:
+                    pass
+
+            add_row(grid, ['', message_panel,''])
+            add_row(grid, [temp_panel, wind_panel, sea_panel])
+            add_row(grid, [moonphase_panel, condition_panel, sun_panel])
+            add_row(grid, [uv_panel, latest_panel, tides_panel])
+            add_row(grid, [equinox_panel, eclipse_panel, ''])
+            add_row(grid, [solstice_panel, '', ''])
+            
+
+            cls.print(
+                Panel(
+                grid,
+                expand=True,
+                title="Today"
                 )
-
-        latest_panel = Panel(rtable, expand=True, title="Latest data")
-        titles = ['- {}\n'.format(v['info']) for k, v in latest.items()]
-        titles_str = ''.join(titles)
-        
-        rtable.title = titles_str
-
-
-        # rainfall3hrs = latest['rainfall3hrs']
-
-        # rainfall3hrs_info_str = '{}'.format(rainfall3hrs['info'])
-
-        # r3table = Table(title=rainfall3hrs_info_str)
-
-        # r3table.add_column("Region", justify="left", style="slate_blue3")
-        # r3table.add_column("Rain", style="dark_cyan")
-
-        # for r, a in rainfall3hrs['data'].items():
-        #     r3table.add_row(r, a)
-
-        # rainfall3hrs_panel = Panel(r3table, expand=True, title="Rainfall 3hrs")
-
-        ###
-        #
-        # Grid
-        #
-        ###
-        def add_row(grid, elements):
-            try:
-                grid.add_row(*elements)
-            except:
-                pass
-
-        add_row(grid, ['', message_panel,''])
-        add_row(grid, [temp_panel, wind_panel, sea_panel])
-        add_row(grid, [moonphase_panel, condition_panel, sun_panel])
-        add_row(grid, [solstice_panel, latest_panel, tides_panel])
-        add_row(grid, [equinox_panel, eclipse_panel, ''])
-        
-
-        cls.print(
-            Panel(
-            grid,
-            expand=True,
-            title="Today"
-            )
-            )
+                )
 
     @classmethod
     def get_tides(cls, print=False):
@@ -1180,3 +1188,46 @@ class Meteo:
                             #cls.print(e)
                             pass
         return infos
+
+
+    @classmethod
+    def get_uvindex(cls, print=False):
+        print_ = print
+        cls.check_internet()
+
+        regions = ["vacoas", "port-louis", "plaisance", "triolet", "camp-diable", "centre-de-flacq",
+                   "flic-en-flac", "tamarin", "rodrigues"]
+        data = {}
+
+        for region in regions:
+            URL = f"https://en.tutiempo.net/ultraviolet-index/{region}.html"
+            r = requests.get(URL, headers=cls.headers)
+            soup = BeautifulSoup(r.content, "html.parser")
+
+            uvindex = soup.find("div", attrs={'class': 'UvIndex'})
+
+            today = uvindex.find("h4")
+
+            uv_status = today.text
+            data[region] = uv_status
+
+        if print_:
+            uv_string = ''
+            for region, status in data.items():
+                region = region.replace('-', ' ').capitalize()
+                if status.lower() == "extreme":
+                    status = f"[blink]:fire: [red]{status}[/red][/blink]"
+                elif status.lower() == "very high":
+                    status = f"[red]{status}[/red]"
+                elif status.lower() == "high":
+                    status = f"[dark_orange3]{status}[/dark_orange3]"
+                elif status.lower() in ["medium", "moderate"]:
+                    status = f"[gold3]{status}[/gold3]"
+                elif status.lower() == "low":
+                    status = f"[green]{status}[/green]"
+                uv_string += f"[magenta]{region}[/magenta]: {status}\n"
+            uv_string.strip('\n')
+            uv_panel = Panel(uv_string, expand=True, title="Ultra-Violet index for Mauritius")
+            cls.print(uv_panel)
+        else:
+            return data

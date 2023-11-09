@@ -17,5 +17,6 @@ get_equinoxes = Meteo.get_equinoxes
 get_solstices = Meteo.get_solstices
 get_tides = Meteo.get_tides
 get_latest = Meteo.get_latest
+get_uvindex = Meteo.get_uvindex
 
-__version__ = "2.7.8"
+__version__ = "2.8.0"

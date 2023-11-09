@@ -44,6 +44,11 @@ def today(rodr):
 def message(links):
     get_main_message(print_=True, links=links)
 
+
+@cli.command(help="Ultra-violet Index")
+def uvindex():
+    get_uvindex(print=True)
+
 def main():
     cli(obj={})
 

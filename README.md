@@ -243,7 +243,12 @@ dict_keys(['february', 'march'])
         }
     }
 }
-
+>>> get_uvindex()
+{
+    'vacoas': 'Extreme', 
+    'port-louis': 'Extreme', 
+    'plaisance': 'Low'
+}
 ```
 
 # Cli
@@ -262,6 +267,7 @@ Commands:
   sunrisemu    Sunrise (Mauritius)
   sunriserodr  Sunrise (Rodrigues)
   today        Today's info
+  uvindex      Ultra Violet Index
 
 ```
 
@@ -328,6 +334,11 @@ Run
 `python -m pytest tests/`
 
 # Changelog
+
+## 2.8.0
+
+- uvindex
+- 
 
 ## 2.7.8
 
