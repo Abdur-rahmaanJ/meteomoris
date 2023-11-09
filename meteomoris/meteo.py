@@ -120,7 +120,7 @@ class Meteo:
             except Exception:
                 return False
             finally:
-                
+                cls.ALREADY_CHECKED_INTERNET = True
                 conn.close()
 
     @classmethod
