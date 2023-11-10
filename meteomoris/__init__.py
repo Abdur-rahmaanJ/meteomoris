@@ -19,4 +19,4 @@ get_tides = Meteo.get_tides
 get_latest = Meteo.get_latest
 get_uvindex = Meteo.get_uvindex
 
-__version__ = "2.8.3"
+__version__ = "2.8.4"
