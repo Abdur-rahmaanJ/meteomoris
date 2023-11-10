@@ -346,6 +346,7 @@ Run
 - 2.8.2 Fix imports
 - 2.8.3 Fix key error
 - 2.8.4 Feat resist cache perms
+- 2.8.5 Fix cache not found on perms error
 
 ## 2.8.0
 
