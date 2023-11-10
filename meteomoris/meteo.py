@@ -89,8 +89,13 @@ class Meteo:
     @classmethod
     def get_cache_data(cls):
         cls.verify_cache_exists()
-        with open(cache_path()) as f:
-            data = json.load(f)
+        data = None
+        try:
+            with open(cache_path()) as f:
+                data = json.load(f)
+            cls.CACHE_PERMS = True
+        except FileNotFoundError:
+            cls.CACHE_PERMS = False
         return data 
     
     @classmethod
