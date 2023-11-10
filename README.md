@@ -279,6 +279,11 @@ from meteomoris import get_main_message
 
 Meteo.CHECK_INTERNET = True # Will check if there is internet
 Meteo.EXIT_ON_NO_INTERNET = True # Will exit if no internet
+Meteo.ALREADY_CHECKED_INTERNET = False
+Meteo.EXIT_ON_NO_INTERNET = True
+Meteo.CHECK_INTERNET = True
+Meteo.DEBUG = False # used during development
+Meteo.today = "2023-11-10" # If you want to override cache data
 Meteo.headers = {
          'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:32.0) Gecko/20100101 Firefox/32.0',
          'Accept' : 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 
@@ -293,7 +298,6 @@ Meteo.headers = {
          'Connection': 'keep-alive',
          'Upgrade-Insecure-Requests': '1'
      } # Redefine default headers here
-Meteo.DEBUG = True # during development
 print(get_main_message())
 ```
 # Installing
@@ -335,10 +339,14 @@ Run
 
 # Changelog
 
+
+## 2.8.1
+
+- Feat cache
+
 ## 2.8.0
 
-- uvindex
-- 
+- Uv index
 
 ## 2.7.8
 
