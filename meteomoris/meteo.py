@@ -49,6 +49,8 @@ class Meteo:
     EXIT_ON_NO_INTERNET = True
     CHECK_INTERNET = True
     DEBUG = False
+    
+    today = str(datetime.date.today()) # Decoupled for tests
 
     try:
         # thanks pypa for broken tricks like this
@@ -87,22 +89,26 @@ class Meteo:
     
     @classmethod
     def get_from_cache(cls, key):
-        today = str(datetime.date.today())
+        '''
+        keep cache day only per day for now
+        until we add functionalities to clear
+        the cache for all
+        '''
         cache_data = cls.get_cache_data()
-        if today not in cache_data:
-            cache_data[str(today)] = {}
+        if cls.today not in cache_data:
+            cache_data = {} # clear cache
+            cache_data[str(cls.today)] = {}
             with open(cache_path(), 'w+') as f:
                 json.dump(cache_data, f)
             return False
-        if key not in cache_data[today]:
+        if key not in cache_data[cls.today]:
             return False 
-        return cache_data[today][key]
+        return cache_data[cls.today][key]
         
     @classmethod
     def add_to_cache(cls, key, data):
-        today = str(datetime.date.today())
         cache_data = cls.get_cache_data()
-        cache_data[today][key] = data 
+        cache_data[cls.today][key] = data 
 
         with open(cache_path(), 'w+') as f:
             json.dump(cache_data, f)
