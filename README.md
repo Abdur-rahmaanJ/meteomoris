@@ -347,6 +347,7 @@ Run
 - 2.8.3 Fix key error
 - 2.8.4 Feat resist cache perms
 - 2.8.5 Fix cache not found on perms error
+- 2.8.6 Fix none error on no cache data
 
 ## 2.8.0
 
