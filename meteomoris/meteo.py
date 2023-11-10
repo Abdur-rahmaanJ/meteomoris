@@ -886,10 +886,18 @@ class Meteo:
                 moonphase = cls.get_moonphase()['{} {}'.format(month, year)]
             except:
                 skip_moonphase = True
-            if country == 'mu':
-                sun = cls.get_sunrisemu()[month][str(day)]
+            if country == 'mu' :
+                sunrise = cls.get_sunrisemu()
+                try:
+                    sun = sunrise[month][str(day)]
+                except KeyError:
+                    sun = sunrise[month][int(day)]
             else:
-                sun = cls.get_sunriserodr()[month][str(day)]
+                sunrise = cls.get_sunriserodr()
+                try:
+                    sun = sunrise[month][str(day)]
+                except KeyError:
+                    sun = sunrise[month][int(day)]
             
 
             # cls.print(forecast)
@@ -1028,7 +1036,10 @@ class Meteo:
             ###
 
             tides_all = cls.get_tides()
-            tides = tides_all['months'][month][str(day)]
+            try:
+                tides = tides_all['months'][month][str(day)]
+            except KeyError:
+                tides = tides_all['months'][month][int(day)]
             tidetable = Table()
 
             tidetable.add_column("Tide", justify="left", style="slate_blue3", no_wrap=True)
@@ -1237,7 +1248,7 @@ class Meteo:
                 cls.add_to_cache('tides', tide_info)
             except Exception as e:
                 raise e
-            cls.print(tide_info)
+            # cls.print(tide_info)
         return tide_info
 
 
