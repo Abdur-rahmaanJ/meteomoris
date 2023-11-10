@@ -12,18 +12,17 @@ try:
     from rich.table import Table
     from rich.panel import Panel
     from rich.status import Status
-    import datetime
-    import calendar
-    import http.client as httplib
-    import re
-    import site
-    import os
-    import http.client as httplib
-    import json
 except Exception as e:
     pass
 
 import sys
+import datetime
+import calendar
+import re
+import site
+import os
+import http.client as httplib
+import json
 
 
 # def __download_file(url, path):
