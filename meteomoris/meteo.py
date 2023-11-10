@@ -122,13 +122,16 @@ class Meteo:
         
     @classmethod
     def add_to_cache(cls, key, data):
-        cache_data = cls.get_cache_data()
-        cache_data[cls.today][key] = data 
+        
 
         try:
+            cache_data = cls.get_cache_data()
+            cache_data[cls.today][key] = data 
             with open(cache_path(), 'w+') as f:
                 json.dump(cache_data, f)
             cls.CACHE_PERMS = True
+        except TypeError:
+            cls.CACHE_PERMS = False
         except PermissionError:
             cls.CACHE_PERMS = False
         
