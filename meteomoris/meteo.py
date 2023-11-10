@@ -49,6 +49,7 @@ class Meteo:
     EXIT_ON_NO_INTERNET = True
     CHECK_INTERNET = True
     DEBUG = False
+    CACHE_PERMS = True
     
     today = str(datetime.date.today()) # Decoupled for tests
 
@@ -78,8 +79,12 @@ class Meteo:
     @classmethod
     def verify_cache_exists(cls):
         if not os.path.exists(cache_path()):
-            with open(cache_path(), 'w+') as f:
-                json.dump({}, f)
+            try:
+                with open(cache_path(), 'w+') as f:
+                    json.dump({}, f)
+                cls.CACHE_PERMS = True
+            except PermissionError:
+                cls.CACHE_PERMS = False
     
     @classmethod
     def get_cache_data(cls):
@@ -99,8 +104,12 @@ class Meteo:
         if cls.today not in cache_data:
             cache_data = {} # clear cache
             cache_data[str(cls.today)] = {}
-            with open(cache_path(), 'w+') as f:
-                json.dump(cache_data, f)
+            try:
+                with open(cache_path(), 'w+') as f:
+                    json.dump(cache_data, f)
+                cls.CACHE_PERMS = True
+            except PermissionError:
+                cls.CACHE_PERMS = False
             return False
         if key not in cache_data[cls.today]:
             return False 
@@ -111,8 +120,12 @@ class Meteo:
         cache_data = cls.get_cache_data()
         cache_data[cls.today][key] = data 
 
-        with open(cache_path(), 'w+') as f:
-            json.dump(cache_data, f)
+        try:
+            with open(cache_path(), 'w+') as f:
+                json.dump(cache_data, f)
+            cls.CACHE_PERMS = True
+        except PermissionError:
+            cls.CACHE_PERMS = False
         
     @classmethod
     def internet_present(cls):
@@ -150,6 +163,10 @@ class Meteo:
         except:
             # TODO Add debug if permm error cache
             cache = False
+        
+        if not cls.CACHE_PERMS:
+            cache = False
+
         if cache:
             return_data = cache
         else:
@@ -244,6 +261,10 @@ class Meteo:
         except:
             # TODO Add debug if permm error cache
             cache = False
+
+        if not cls.CACHE_PERMS:
+            cache = False
+        
         if cache:
             return_data = cache
         else:
@@ -505,6 +526,8 @@ class Meteo:
         except:
             # TODO Add debug if permm error cache
             cache = False
+        if not cls.CACHE_PERMS:
+            cache = False
         if cache:
             data = cache
         else:
@@ -573,6 +596,8 @@ class Meteo:
             cache = cls.get_from_cache('sunriserodr')
         except:
             # TODO Add debug if permm error cache
+            cache = False
+        if not cls.CACHE_PERMS:
             cache = False
         if cache:
             data = cache
@@ -643,6 +668,8 @@ class Meteo:
             cache = cls.get_from_cache('eclipses_raw')
         except:
             # TODO Add debug if permm error cache
+            cache = False
+        if not cls.CACHE_PERMS:
             cache = False
         if cache:
             eclipses_data = cache
@@ -1157,7 +1184,9 @@ class Meteo:
         except Exception as e:
             # TODO Add debug if permm error cache
             cache = False
-            raise e
+
+        if not cls.CACHE_PERMS:
+            cache = False
         if cache:
             tide_info = cache
         else:
@@ -1261,6 +1290,8 @@ class Meteo:
         except:
             # TODO Add debug if permm error cache
             cache = False
+        if not cls.CACHE_PERMS:
+            cache = False
         if cache:
             rainfall_data = cache
         else:
@@ -1307,6 +1338,8 @@ class Meteo:
             cache = cls.get_from_cache('latest')
         except:
             # TODO Add debug if permm error cache
+            cache = False
+        if not cls.CACHE_PERMS:
             cache = False
         if cache:
             infos = cache
@@ -1386,6 +1419,8 @@ class Meteo:
             cache = cls.get_from_cache('uvindex')
         except:
             # TODO Add debug if permm error cache
+            cache = False
+        if not cls.CACHE_PERMS:
             cache = False
         if cache:
             data = cache
