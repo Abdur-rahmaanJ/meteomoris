@@ -74,6 +74,7 @@ class Meteo:
         "Upgrade-Insecure-Requests": "1",
     }
 
+    # --- Utilities ---
     @classmethod
     def verify_cache_exists(cls):
         if not os.path.exists(cache_path()):
@@ -138,54 +139,70 @@ class Meteo:
                     if cls.EXIT_ON_NO_INTERNET:
                         sys.exit()
 
+    # --- Data ---
     @classmethod
     def get_weekforecast(cls, day=None, print=False):
         print_ = print
-        cls.check_internet()
 
-        URL = "http://metservice.intnet.mu"
-        r = requests.get(URL, headers=cls.headers)
-        soup = BeautifulSoup(r.content, "html.parser")
+        return_data = None
+        try:
+            cache = cls.get_from_cache('weekforecast')
+        except:
+            # TODO Add debug if permm error cache
+            cache = False
+        if cache:
+            return_data = cache
+        else:
+            cls.check_internet()
 
-        w_forecast = soup.find(attrs={"class": "daysforecast"})
+            URL = "http://metservice.intnet.mu"
+            r = requests.get(URL, headers=cls.headers)
+            soup = BeautifulSoup(r.content, "html.parser")
 
-        week_forcecast = w_forecast.find_all(attrs={"class": "forecast"})
+            w_forecast = soup.find(attrs={"class": "daysforecast"})
 
-        week = []
+            week_forcecast = w_forecast.find_all(attrs={"class": "forecast"})
 
-        for i, _day in enumerate(week_forcecast):
-            fulldate = _day.find(attrs={"class": "fday"})
-            fdate = fulldate.text.split(",")
-            date_day = fdate[0]
-            date_date = fdate[1].strip()
+            week = []
 
-            return_dict = {}
+            for i, _day in enumerate(week_forcecast):
+                fulldate = _day.find(attrs={"class": "fday"})
+                fdate = fulldate.text.split(",")
+                date_day = fdate[0]
+                date_date = fdate[1].strip()
 
-            return_dict["day"] = date_day
-            return_dict["date"] = date_date
+                return_dict = {}
 
-            condition = _day.find(attrs={"class": "fcondition"})
-            return_dict["condition"] = condition.text
+                return_dict["day"] = date_day
+                return_dict["date"] = date_date
 
-            temp = _day.find_all(attrs={"class": "ftemp"})
-            min_temp = temp[0].text
-            max_temp = temp[1].text
-            return_dict["min"] = min_temp
-            return_dict["max"] = max_temp
+                condition = _day.find(attrs={"class": "fcondition"})
+                return_dict["condition"] = condition.text
 
-            fgrey = _day.find_all(attrs={"class": "fgrey"})
-            wind = fgrey[0].text
-            sea_condition = fgrey[1].text
-            return_dict["wind"] = wind
-            return_dict["sea condition"] = sea_condition
+                temp = _day.find_all(attrs={"class": "ftemp"})
+                min_temp = temp[0].text
+                max_temp = temp[1].text
+                return_dict["min"] = min_temp
+                return_dict["max"] = max_temp
 
-            prob = _day.find_all(attrs={"class": "fgrey1"})
-            probability = prob[0].text
-            return_dict["probability"] = probability
+                fgrey = _day.find_all(attrs={"class": "fgrey"})
+                wind = fgrey[0].text
+                sea_condition = fgrey[1].text
+                return_dict["wind"] = wind
+                return_dict["sea condition"] = sea_condition
 
-            week.append(return_dict)
+                prob = _day.find_all(attrs={"class": "fgrey1"})
+                probability = prob[0].text
+                return_dict["probability"] = probability
 
-        return_data = {}
+                week.append(return_dict)
+
+            return_data = week
+
+            try:
+                cls.add_to_cache('weekforecast', return_data)
+            except:
+                pass 
 
         if print_:
             console = Console()
@@ -198,65 +215,71 @@ class Meteo:
             table.add_column("Sea condition", justify="left")
             table.add_column("Wind", justify="left", no_wrap=True)
             table.add_column("Probability", justify="left")
-
-
-        if day is None:
-            return_data = week
-
-            if print_:
+            if day is None:
                 table.title = 'Week forecast'
                 for d in return_data:
                     table.add_row(d['day'], d['date'], d['min'], d['max'], d['condition'], d['sea condition'], d['wind'], d['probability'])
                 console.print(table)
-                return
-        else:
-            return_data = week[day]
 
-            if print_:
+            else:
+                return_data = return_data[day]
                 table.title = 'Day forecast'
                 d = return_data
                 table.add_row(d['day'], d['date'], d['min'], d['max'], d['condition'], d['sea condition'], d['wind'], d['probability'])
                 console.print(table)
                 return
 
-        return return_data
+        if day is None:
+            return return_data
+        else:
+            return return_data[day]
 
     @classmethod
     def get_cityforecast(cls, print=False, day=None):
         print_ = print
-        cls.check_internet()
-        # for city of PL
 
-        URL = "http://metservice.intnet.mu"
-        r = requests.get(URL, headers=cls.headers)
-        soup = BeautifulSoup(r.content, "html.parser")
+        return_data = None
+        try:
+            cache = cls.get_from_cache('cityforecast')
+        except:
+            # TODO Add debug if permm error cache
+            cache = False
+        if cache:
+            return_data = cache
+        else:
+            cls.check_internet()
+            # for city of PL
 
-        w_forecast = soup.find(attrs={"class": "city_forecast"})
-        week_forcecast = w_forecast.find_all(attrs={"class": "block"})
+            URL = "http://metservice.intnet.mu"
+            r = requests.get(URL, headers=cls.headers)
+            soup = BeautifulSoup(r.content, "html.parser")
 
-        week = []
+            w_forecast = soup.find(attrs={"class": "city_forecast"})
+            week_forcecast = w_forecast.find_all(attrs={"class": "block"})
 
-        for i, _day in enumerate(week_forcecast):
-            date_day = _day.find(attrs={"class": "cday"})
-            return_dict = {}
-            return_dict["day"] = date_day.text[:-1]
+            week = []
 
-            date_date = _day.find(attrs={"class": "cdate"})
-            return_dict["date"] = date_date.text
+            for i, _day in enumerate(week_forcecast):
+                date_day = _day.find(attrs={"class": "cday"})
+                return_dict = {}
+                return_dict["day"] = date_day.text[:-1]
 
-            condition = _day.find(attrs={"class": "fcondition"})
-            return_dict["condition"] = condition.text
+                date_date = _day.find(attrs={"class": "cdate"})
+                return_dict["date"] = date_date.text
 
-            min_temp = _day.find(attrs={"class": "ctemp"})
-            return_dict["min"] = min_temp.text
+                condition = _day.find(attrs={"class": "fcondition"})
+                return_dict["condition"] = condition.text
 
-            max_temp = _day.find(attrs={"class": "ctemp1"})
-            return_dict["max"] = max_temp.text
+                min_temp = _day.find(attrs={"class": "ctemp"})
+                return_dict["min"] = min_temp.text
 
-            wind = _day.find(attrs={"class": "cwind1"})
-            return_dict["wind"] = wind.text
+                max_temp = _day.find(attrs={"class": "ctemp1"})
+                return_dict["max"] = max_temp.text
 
-            week.append(return_dict)
+                wind = _day.find(attrs={"class": "cwind1"})
+                return_dict["wind"] = wind.text
+
+                week.append(return_dict)
 
 
         if print_:
@@ -290,7 +313,11 @@ class Meteo:
                 table.add_row(d['day'], d['date'], d['min'], d['max'], d['condition'], d['wind'])
                 console.print(table)
                 return
-            
+        
+        try:
+            cls.add_to_cache('cityforecast', return_data)
+        except:
+            pass 
 
         return return_data
 
@@ -472,39 +499,51 @@ class Meteo:
     def get_sunrisemu(cls, print=False):
         print_ = print
 
-        cls.check_internet()
+        data = None 
+        try:
+            cache = cls.get_from_cache('sunrisemu')
+        except:
+            # TODO Add debug if permm error cache
+            cache = False
+        if cache:
+            data = cache
+        else:
+            cls.check_internet()
 
-        URL = "http://metservice.intnet.mu/sun-moon-and-tides-sunrise-sunset-mauritius.php"
-        r = requests.get(URL, headers=cls.headers)
-        soup = BeautifulSoup(r.content, "html.parser")
+            URL = "http://metservice.intnet.mu/sun-moon-and-tides-sunrise-sunset-mauritius.php"
+            r = requests.get(URL, headers=cls.headers)
+            soup = BeautifulSoup(r.content, "html.parser")
 
-        table = soup.find("table")
-        table_body = table.find("tbody")
+            table = soup.find("table")
+            table_body = table.find("tbody")
 
-        rows = table_body.find_all("tr")
-        data = dict()
-        for i, row in enumerate(rows):
-            cols = row.find_all("td")
+            rows = table_body.find_all("tr")
+            data = dict()
+            for i, row in enumerate(rows):
+                cols = row.find_all("td")
 
-            cols = [ele.text.strip() for ele in cols]
+                cols = [ele.text.strip() for ele in cols]
 
-            if i == 0:
-                month1 = re.sub('\d+', '', cols[1].lower()).strip()
-                month2 = re.sub('\d+', '', cols[2].lower()).strip()
-                data = {month1: {}, month2: {}}
+                if i == 0:
+                    month1 = re.sub('\d+', '', cols[1].lower()).strip()
+                    month2 = re.sub('\d+', '', cols[2].lower()).strip()
+                    data = {month1: {}, month2: {}}
 
-            elif i > 1:
-                date = int(cols[0])
-                m1_rise = cols[1]
-                m1_set = cols[2]
-                m2_rise = cols[3]
-                m2_set = cols[4]
+                elif i > 1:
+                    date = int(cols[0])
+                    m1_rise = cols[1]
+                    m1_set = cols[2]
+                    m2_rise = cols[3]
+                    m2_set = cols[4]
 
-                if m1_rise and m1_set:
-                    data[month1][date] = {"rise": m1_rise, "set": m1_set}
-                if m2_rise and m2_set:
-                    data[month2][date] = {"rise": m2_rise, "set": m2_set}
-
+                    if m1_rise and m1_set:
+                        data[month1][date] = {"rise": m1_rise, "set": m1_set}
+                    if m2_rise and m2_set:
+                        data[month2][date] = {"rise": m2_rise, "set": m2_set}
+            try:
+                cls.add_to_cache('sunrisemu', data)
+            except:
+                pass 
         def get_sun_info(data, month, date, point):
             try:
                 return '{}'.format(data[month][date][point])
@@ -529,37 +568,50 @@ class Meteo:
     @classmethod
     def get_sunriserodr(cls, print=False):
         print_ = print
-        cls.check_internet()
-        URL = "http://metservice.intnet.mu/sun-moon-and-tides-sunrise-sunset-rodrigues.php"
-        r = requests.get(URL, headers=cls.headers)
-        soup = BeautifulSoup(r.content, "html.parser")
+        data = None
+        try:
+            cache = cls.get_from_cache('sunriserodr')
+        except:
+            # TODO Add debug if permm error cache
+            cache = False
+        if cache:
+            data = cache
+        else:
+            cls.check_internet()
+            URL = "http://metservice.intnet.mu/sun-moon-and-tides-sunrise-sunset-rodrigues.php"
+            r = requests.get(URL, headers=cls.headers)
+            soup = BeautifulSoup(r.content, "html.parser")
 
-        table = soup.find("table")
-        table_body = table.find("tbody")
+            table = soup.find("table")
+            table_body = table.find("tbody")
 
-        rows = table_body.find_all("tr")
-        data = dict()
-        for i, row in enumerate(rows):
-            cols = row.find_all("td")
+            rows = table_body.find_all("tr")
+            data = dict()
+            for i, row in enumerate(rows):
+                cols = row.find_all("td")
 
-            cols = [ele.text.strip() for ele in cols]
+                cols = [ele.text.strip() for ele in cols]
 
-            if i == 0:
-                month1 = cols[1].lower()
-                month2 = cols[2].lower()
-                data = {month1: {}, month2: {}}
+                if i == 0:
+                    month1 = cols[1].lower()
+                    month2 = cols[2].lower()
+                    data = {month1: {}, month2: {}}
 
-            elif i > 1:
-                date = int(cols[0])
-                m1_rise = cols[1]
-                m1_set = cols[2]
-                m2_rise = cols[3]
-                m2_set = cols[4]
+                elif i > 1:
+                    date = int(cols[0])
+                    m1_rise = cols[1]
+                    m1_set = cols[2]
+                    m2_rise = cols[3]
+                    m2_set = cols[4]
 
-                if m1_rise and m1_set:
-                    data[month1][date] = {"rise": m1_rise, "set": m1_set}
-                if m2_rise and m2_set:
-                    data[month2][date] = {"rise": m2_rise, "set": m2_set}
+                    if m1_rise and m1_set:
+                        data[month1][date] = {"rise": m1_rise, "set": m1_set}
+                    if m2_rise and m2_set:
+                        data[month2][date] = {"rise": m2_rise, "set": m2_set}
+            try:
+                cls.add_to_cache('sunriserodr', data)
+            except:
+                pass 
         def get_sun_info(data, month, date, point):
             try:
                 return '{}'.format(data[month][date][point])
@@ -585,6 +637,8 @@ class Meteo:
 
     @classmethod
     def get_eclipses_raw(cls):
+        eclipses_data = None 
+
         try:
             cache = cls.get_from_cache('eclipses_raw')
         except:
@@ -833,9 +887,9 @@ class Meteo:
             except:
                 skip_moonphase = True
             if country == 'mu':
-                sun = cls.get_sunrisemu()[month][day]
+                sun = cls.get_sunrisemu()[month][str(day)]
             else:
-                sun = cls.get_sunriserodr()[month][day]
+                sun = cls.get_sunriserodr()[month][str(day)]
             
 
             # cls.print(forecast)
@@ -974,8 +1028,7 @@ class Meteo:
             ###
 
             tides_all = cls.get_tides()
-
-            tides = tides_all['months'][month][day]
+            tides = tides_all['months'][month][str(day)]
             tidetable = Table()
 
             tidetable.add_column("Tide", justify="left", style="slate_blue3", no_wrap=True)
@@ -1085,104 +1138,106 @@ class Meteo:
     @classmethod
     def get_tides(cls, print=False):
         print_ = print
+
+        tide_info = None
         
-        # try:
-        #     cache = cls.get_from_cache('tides')
-        # except Exception as e:
-        #     # TODO Add debug if permm error cache
-        #     cache = False
-        #     raise e
-        # if cache:
-        #     tide_info = cache
-        # else:
-        cls.check_internet()
-        URL = "http://metservice.intnet.mu/sun-moon-and-tides-tides-mauritius.php"
-        r = requests.get(URL, headers=cls.headers)
-        soup = BeautifulSoup(r.content, "html.parser")
-        tables = soup.find_all("table")
-        #cls.print(len(tables))
-        if len(tables) == 1:
-            text_arr = tables[0].text.split()
-            text_arr_cleaned = []
-            months = []
-            years = []
-            month_names = [m.casefold() for m in calendar.month_name if m]
-            for t in text_arr:
-                if t.casefold() in month_names:
-                    months.append(t.casefold())
-                    text_arr_cleaned.append(t.casefold())
-                elif re.findall('\d\d\d\d', t):
-                    text_arr_cleaned.append(t.casefold())
-                    years.append(t)
-                elif ((t.casefold() not in ['date', '1st', '2nd', '(local)', '(height)',
-                                        'tide', 'low', 'high', 'time', 'height',
-                                        '(cm)']) 
-                    ):
-                    text_arr_cleaned.append(t)
+        try:
+            cache = cls.get_from_cache('tides')
+        except Exception as e:
+            # TODO Add debug if permm error cache
+            cache = False
+            raise e
+        if cache:
+            tide_info = cache
+        else:
+            cls.check_internet()
+            URL = "http://metservice.intnet.mu/sun-moon-and-tides-tides-mauritius.php"
+            r = requests.get(URL, headers=cls.headers)
+            soup = BeautifulSoup(r.content, "html.parser")
+            tables = soup.find_all("table")
+            #cls.print(len(tables))
+            if len(tables) == 1:
+                text_arr = tables[0].text.split()
+                text_arr_cleaned = []
+                months = []
+                years = []
+                month_names = [m.casefold() for m in calendar.month_name if m]
+                for t in text_arr:
+                    if t.casefold() in month_names:
+                        months.append(t.casefold())
+                        text_arr_cleaned.append(t.casefold())
+                    elif re.findall('\d\d\d\d', t):
+                        text_arr_cleaned.append(t.casefold())
+                        years.append(t)
+                    elif ((t.casefold() not in ['date', '1st', '2nd', '(local)', '(height)',
+                                            'tide', 'low', 'high', 'time', 'height',
+                                            '(cm)']) 
+                        ):
+                        text_arr_cleaned.append(t)
 
-        # cls.print(text_arr_cleaned)
-        #     [
-        # 'july',
-        # '2023',
-        # '1',
-        # '12:02',
-        # '54',
-        # '23:11',
-        # '57',
-        # '05:29',
-        # '6',
-        # '17:28',
-        # '28',
-        # '2',
-        # cls.print(months)
-        # cls.print(years)
-        tide_info = {
-            'months': {
+            # cls.print(text_arr_cleaned)
+            #     [
+            # 'july',
+            # '2023',
+            # '1',
+            # '12:02',
+            # '54',
+            # '23:11',
+            # '57',
+            # '05:29',
+            # '6',
+            # '17:28',
+            # '28',
+            # '2',
+            # cls.print(months)
+            # cls.print(years)
+            tide_info = {
+                'months': {
 
-            },
-            'month_format': {
-                'date': [
-                '1st High Tide (Time (Local))', 
-                '1st High Tide (Height (cm))',
-                '2nd High Tide (Time (Local))', 
-                '2nd High Tide (Height (cm))',
-                '1st Low Tide (Time (Local))', 
-                '1st Low Tide (Height (cm))',
-                '2nd Low Tide (Time (Local))', 
-                '2nd Low Tide (Height (cm))',
-                ]
-            },
-            'meta':{
-                'months':[]
+                },
+                'month_format': {
+                    'date': [
+                    '1st High Tide (Time (Local))', 
+                    '1st High Tide (Height (cm))',
+                    '2nd High Tide (Time (Local))', 
+                    '2nd High Tide (Height (cm))',
+                    '1st Low Tide (Time (Local))', 
+                    '1st Low Tide (Height (cm))',
+                    '2nd Low Tide (Time (Local))', 
+                    '2nd Low Tide (Height (cm))',
+                    ]
+                },
+                'meta':{
+                    'months':[]
+                }
             }
-        }
-        for i, month in enumerate(months):
-            tide_info['meta']['months'].append([months[i], years[i]])
-        
-        tc_i = 0
-        current_month = None
-        month_pad = 0
-        while tc_i < len(text_arr_cleaned):
-            text = text_arr_cleaned[tc_i]
-            if text in month_names:
-                # current_month = f'{text_arr_cleaned[tc_i]}_{text_arr_cleaned[tc_i+1]}'
-                current_month = f'{text_arr_cleaned[tc_i]}'
-                tide_info['months'][current_month] = {}
-                month_pad += 1
-                tc_i += 2
-                continue 
-            else:
-                if (tc_i - (2 * month_pad)) % 9 == 0:
-                    date = int(text_arr_cleaned[tc_i])
-                    tide_info['months'][current_month][date] = text_arr_cleaned[tc_i+1:tc_i+9]
-                    tc_i += 8
-            tc_i += 1
-            # cls.print(tide_info)
-            # try:
-            #     cls.add_to_cache('tides', tide_info)
-            # except Exception as e:
-            #     raise e
-            # cls.print(tide_info)
+            for i, month in enumerate(months):
+                tide_info['meta']['months'].append([months[i], years[i]])
+            
+            tc_i = 0
+            current_month = None
+            month_pad = 0
+            while tc_i < len(text_arr_cleaned):
+                text = text_arr_cleaned[tc_i]
+                if text in month_names:
+                    # current_month = f'{text_arr_cleaned[tc_i]}_{text_arr_cleaned[tc_i+1]}'
+                    current_month = f'{text_arr_cleaned[tc_i]}'
+                    tide_info['months'][current_month] = {}
+                    month_pad += 1
+                    tc_i += 2
+                    continue 
+                else:
+                    if (tc_i - (2 * month_pad)) % 9 == 0:
+                        date = int(text_arr_cleaned[tc_i])
+                        tide_info['months'][current_month][date] = text_arr_cleaned[tc_i+1:tc_i+9]
+                        tc_i += 8
+                tc_i += 1
+
+            try:
+                cls.add_to_cache('tides', tide_info)
+            except Exception as e:
+                raise e
+            cls.print(tide_info)
         return tide_info
 
 
@@ -1236,7 +1291,7 @@ class Meteo:
     @classmethod
     def get_latest(cls, print=False):
         print_ = print 
-
+        infos = None
         try:
             cache = cls.get_from_cache('latest')
         except:
