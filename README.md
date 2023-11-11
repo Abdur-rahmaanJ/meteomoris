@@ -280,9 +280,10 @@ from meteomoris import get_main_message
 Meteo.CHECK_INTERNET = True # Will check if there is internet
 Meteo.EXIT_ON_NO_INTERNET = True # Will exit if no internet
 Meteo.ALREADY_CHECKED_INTERNET = False
-Meteo.EXIT_ON_NO_INTERNET = True
-Meteo.CHECK_INTERNET = True
 Meteo.DEBUG = False # used during development
+Meteo.CACHE_PERMS = True # used internally, modify to refelct if cache file can be created
+Meteo.CACHE_PATH = "." # If cache path can be customized, default to  site-packages
+
 Meteo.today = "2023-11-10" # If you want to override cache data
 Meteo.headers = {
          'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:32.0) Gecko/20100101 Firefox/32.0',
@@ -348,6 +349,7 @@ Run
 - 2.8.4 Feat resist cache perms
 - 2.8.5 Fix cache not found on perms error
 - 2.8.6 Fix none error on no cache data
+- 2.8.7 Lots of fixes, tests + customizable cache path
 
 ## 2.8.0
 
