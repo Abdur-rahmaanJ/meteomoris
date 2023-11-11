@@ -50,6 +50,7 @@ class Meteo:
     CHECK_INTERNET = True
     DEBUG = False
     CACHE_PERMS = True
+    CACHE_PATH = cache_path()
     
     today = str(datetime.date.today()) # Decoupled for tests
 
@@ -78,23 +79,37 @@ class Meteo:
     # --- Utilities ---
     @classmethod
     def verify_cache_exists(cls):
-        if not os.path.exists(cache_path()):
+        if cls.DEBUG:
+            cls.print('Verifying if cache exists')
+        if not os.path.exists(cls.CACHE_PATH):
             try:
-                with open(cache_path(), 'w+') as f:
+                if cls.DEBUG:
+                    cls.print(f'Not exists, trying to create empty file at {cls.CACHE_PATH}')
+                with open(cls.CACHE_PATH, 'w+') as f:
                     json.dump({}, f)
                 cls.CACHE_PERMS = True
             except PermissionError:
+                if cls.DEBUG:
+                    cls.print('Could not: permission error')
                 cls.CACHE_PERMS = False
     
     @classmethod
     def get_cache_data(cls):
         cls.verify_cache_exists()
+
+        if cls.DEBUG:
+            cls.print('Fetching cache data')
         data = None
         try:
-            with open(cache_path()) as f:
+            
+            with open(cls.CACHE_PATH) as f:
                 data = json.load(f)
             cls.CACHE_PERMS = True
+            if cls.DEBUG:
+                cls.print(f'Successful: {data}')
         except FileNotFoundError:
+            if cls.DEBUG:
+                cls.print('File not found, perms set to false')
             cls.CACHE_PERMS = False
         return data 
     
@@ -105,35 +120,48 @@ class Meteo:
         until we add functionalities to clear
         the cache for all
         '''
+        if cls.DEBUG:
+            cls.print(f'Loading key {key} from cache')
         cache_data = cls.get_cache_data()
         if cls.today not in cache_data:
+            if cls.DEBUG: cls.print('Today not in cache, adding')
             cache_data = {} # clear cache
             cache_data[str(cls.today)] = {}
+            if cls.DEBUG: cls.print(f'Added {cache_data}, dumping data')
             try:
-                with open(cache_path(), 'w+') as f:
+                with open(cls.CACHE_PATH, 'w+') as f:
                     json.dump(cache_data, f)
                 cls.CACHE_PERMS = True
+                if cls.DEBUG: cls.print('Dumped!')
             except PermissionError:
                 cls.CACHE_PERMS = False
+                if cls.DEBUG: cls.print('Could not dump, perms error')
             return False
         if key not in cache_data[cls.today]:
+            if cls.DEBUG: cls.print(f'Key {key} not in {cache_data[cls.today]}')
             return False 
-        return cache_data[cls.today][key]
+        
+        data = cache_data[cls.today][key]
+        if cls.DEBUG: cls.print(f'Returning {data}')
+        return data
         
     @classmethod
     def add_to_cache(cls, key, data):
-        
+        if cls.DEBUG: cls.print(f'Trying to add key {key} and {data}')
 
         try:
             cache_data = cls.get_cache_data()
             cache_data[cls.today][key] = data 
-            with open(cache_path(), 'w+') as f:
+            with open(cls.CACHE_PATH, 'w+') as f:
                 json.dump(cache_data, f)
             cls.CACHE_PERMS = True
+            if cls.DEBUG: cls.print(f'Successfully added {key} and {data}')
         except TypeError:
             cls.CACHE_PERMS = False
+            if cls.DEBUG: cls.print(f'Could not add {key} and {data}: Did not receive data')
         except PermissionError:
             cls.CACHE_PERMS = False
+            if cls.DEBUG: cls.print(f'Could not add {key} and {data}: Perms error')
         
     @classmethod
     def internet_present(cls):
@@ -263,6 +291,9 @@ class Meteo:
     def get_cityforecast(cls, print=False, day=None):
         print_ = print
 
+        if cls.DEBUG:
+            cls.print('Fetching city forecast')
+
         return_data = None
         try:
             cache = cls.get_from_cache('cityforecast')
@@ -274,8 +305,12 @@ class Meteo:
             cache = False
         
         if cache:
+            if cls.DEBUG:
+                cls.print("Found in cache")
             return_data = cache
         else:
+            if cls.DEBUG:
+                cls.print('Not found in cache')
             cls.check_internet()
             # for city of PL
 
@@ -310,6 +345,8 @@ class Meteo:
 
                 week.append(return_dict)
 
+            return_data = week
+
  
 
         if print_:
@@ -337,7 +374,10 @@ class Meteo:
                 table.add_row(d['day'], d['date'], d['min'], d['max'], d['condition'], d['wind'])
                 console.print(table)
                 return
+    
         if day is None:
+            if cls.DEBUG:
+                cls.print(f'{return_data}')
             return return_data
         else:
             return return_data[day]
