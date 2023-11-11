@@ -35,11 +35,14 @@ def test_eclipses():
 def test_equinoxes():
     assert isinstance(meteomoris.get_equinoxes(), list)
 
+
 def test_solstices():
     assert isinstance(meteomoris.get_solstices(), list)
 
+
 def test_tides():
     assert isinstance(meteomoris.get_tides(), dict)
+
 
 def test_latest():
     assert isinstance(meteomoris.get_latest(), dict)
@@ -47,4 +50,3 @@ def test_latest():
 
 def test_uvindex():
     assert isinstance(meteomoris.get_uvindex(), dict)
-
