@@ -13,6 +13,7 @@ def test_moonphase():
 
 def test_cityforecast():
     assert isinstance(meteomoris.get_cityforecast(), list)
+    assert isinstance(meteomoris.get_cityforecast(day=1), dict)
 
 
 def test_main_message():
