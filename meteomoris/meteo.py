@@ -310,6 +310,7 @@ class Meteo:
 
                 week.append(return_dict)
 
+ 
 
         if print_:
             console = Console()
@@ -321,34 +322,25 @@ class Meteo:
             table.add_column("Condition", justify="left")
             table.add_column("Wind", justify="left", no_wrap=True)
 
-        return_data = {}
-
-        if day is None:
-            return_data = week
-
-            if print_:
+            if day is None:
+                return_data = week
                 table.title = 'Week forecast'
                 for d in return_data:
                     table.add_row(d['day'], d['date'], d['min'], d['max'], d['condition'], d['wind'])
                 console.print(table)
                 return
-        else:
-            return_data = week[day]
-
-            if print_:
+            else:
+                return_data = week[day]
                 table.title = 'Day forecast'
                 d = return_data
                 
                 table.add_row(d['day'], d['date'], d['min'], d['max'], d['condition'], d['wind'])
                 console.print(table)
                 return
-        
-        try:
-            cls.add_to_cache('cityforecast', return_data)
-        except:
-            pass 
-
-        return return_data
+        if day is None:
+            return return_data
+        else:
+            return return_data[day]
 
     @classmethod
     def get_moonphase(cls, print=False, month=None):
