@@ -155,13 +155,13 @@ class Meteo:
             with open(cls.CACHE_PATH, 'w+') as f:
                 json.dump(cache_data, f)
             cls.CACHE_PERMS = True
-            if cls.DEBUG: cls.print(f'Successfully added {key} and {data}')
+            if cls.DEBUG: cls.print(f'Successfully added key {key} and data {data}')
         except TypeError:
             cls.CACHE_PERMS = False
-            if cls.DEBUG: cls.print(f'Could not add {key} and {data}: Did not receive data')
+            if cls.DEBUG: cls.print(f'Could not add key {key} and data {data}: Did not receive data')
         except PermissionError:
             cls.CACHE_PERMS = False
-            if cls.DEBUG: cls.print(f'Could not add {key} and {data}: Perms error')
+            if cls.DEBUG: cls.print(f'Could not add key {key} and data {data}: Perms error')
         
     @classmethod
     def internet_present(cls):
@@ -254,8 +254,8 @@ class Meteo:
 
             try:
                 cls.add_to_cache('weekforecast', return_data)
-            except:
-                pass 
+            except Exception as e:
+                if cls.DEBUG: cls.print(f'Could not add week forecast to cache: {e}')
 
         if print_:
             console = Console()
@@ -347,7 +347,10 @@ class Meteo:
 
             return_data = week
 
- 
+            try:
+                cls.add_to_cache('cityforecast', return_data)
+            except Exception as e:
+                if cls.DEBUG: cls.print(f'Could not add week forecast to cache: {e}')
 
         if print_:
             console = Console()
@@ -376,8 +379,6 @@ class Meteo:
                 return
     
         if day is None:
-            if cls.DEBUG:
-                cls.print(f'{return_data}')
             return return_data
         else:
             return return_data[day]
