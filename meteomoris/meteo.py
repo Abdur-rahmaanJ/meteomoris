@@ -9,6 +9,7 @@ try:
     from rich.console import Console
     from rich.table import Table
     from rich.panel import Panel
+    from rich.layout import Layout
 except Exception:
     pass
 
@@ -1136,10 +1137,8 @@ class Meteo:
                 uv_string += f"[magenta]{region}[/magenta]: {status}\n"
             uv_string.strip("\n")
 
-            grid = Table.grid()
-            grid.add_column()
-            grid.add_column()
-            grid.add_column()
+            
+
             temp_str = "[b]{}-{}[/]".format(forecast["min"], forecast["max"])
             temp_panel = Panel(temp_str, expand=True, title="Temperature")
 
@@ -1279,18 +1278,35 @@ class Meteo:
             # Grid
             #
             ###
+            grid = Table.grid()
+            grid.add_column()
+            grid.add_column()
             def add_row(grid, elements):
                 try:
                     grid.add_row(*elements)
                 except:
                     pass
+            ltable = Table(box=None, show_header=False)
+            ltable.add_column()
+            ltable.add_row(temp_panel)
+            ltable.add_row(wind_panel)
+            ltable.add_row(sea_panel)
+            ltable.add_row(sun_panel)
+            ltable.add_row(uv_panel)
+            ltable.add_row(tides_panel)
+            ltable.add_row(moonphase_panel)
 
-            add_row(grid, ["", message_panel, ""])
-            add_row(grid, [temp_panel, wind_panel, sea_panel])
-            add_row(grid, [moonphase_panel, condition_panel, sun_panel])
-            add_row(grid, [uv_panel, latest_panel, tides_panel])
-            add_row(grid, [equinox_panel, eclipse_panel, ""])
-            add_row(grid, [solstice_panel, "", ""])
+            rtable = Table(box=None, show_header=False)
+            rtable.add_column()
+            rtable.add_row(message_panel)
+            rtable.add_row(condition_panel)
+            rtable.add_row(latest_panel)
+            rtable.add_row(equinox_panel)
+            rtable.add_row(solstice_panel)
+            rtable.add_row(eclipse_panel)
+
+            
+            add_row(grid, [ltable, rtable])
 
             cls.print(Panel(grid, expand=True, title="Today"))
 
