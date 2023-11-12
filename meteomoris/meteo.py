@@ -9,7 +9,6 @@ try:
     from rich.console import Console
     from rich.table import Table
     from rich.panel import Panel
-    from rich.layout import Layout
 except Exception:
     pass
 
@@ -1137,8 +1136,6 @@ class Meteo:
                 uv_string += f"[magenta]{region}[/magenta]: {status}\n"
             uv_string.strip("\n")
 
-            
-
             temp_str = "[b]{}-{}[/]".format(forecast["min"], forecast["max"])
             temp_panel = Panel(temp_str, expand=True, title="Temperature")
 
@@ -1305,7 +1302,6 @@ class Meteo:
             rtable.add_row(solstice_panel)
             rtable.add_row(eclipse_panel)
 
-            
             add_row(grid, [ltable, rtable])
 
             cls.print(Panel(grid, expand=True, title="Today"))
