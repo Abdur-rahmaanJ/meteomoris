@@ -1466,78 +1466,66 @@ class Meteo:
     def get_latest(cls, print=False):
         print_ = print
         infos = None
-        try:
-            cache = cls.get_from_cache("latest")
-        except:
-            # TODO Add debug if permm error cache
-            cache = False
-        if not cls.CACHE_PERMS:
-            cache = False
-        if cache:
-            infos = cache
-        else:
-            cls.check_internet()
 
-            URL = "http://metservice.intnet.mu/latest-weather-data.php"
-            r = requests.get(URL, headers=cls.headers)
-            soup = BeautifulSoup(r.content, "html.parser")
+        cls.check_internet()
 
-            weather_info = soup.find_all("div", attrs={"class": "weatherinfo"})
-            weather_info = [w.text.strip() for w in weather_info]
+        URL = "http://metservice.intnet.mu/latest-weather-data.php"
+        r = requests.get(URL, headers=cls.headers)
+        soup = BeautifulSoup(r.content, "html.parser")
 
-            tables = soup.find_all("table", attrs={"class": "tableau"})
+        weather_info = soup.find_all("div", attrs={"class": "weatherinfo"})
+        weather_info = [w.text.strip() for w in weather_info]
 
-            infos = {
-                "rainfall24h": {},
-                "rainfall3hrs": {},
-                "wind": {},
-                "humidity": {},
-                "minmaxtemp": {},
-            }
+        tables = soup.find_all("table", attrs={"class": "tableau"})
 
-            for i, table in enumerate(tables):
-                title = weather_info[i].replace("\r", "").replace("\n", "")
-                if "humidity" in title.casefold():
-                    key = "humidity"
-                elif "wind" in title.casefold():
-                    key = "wind"
-                elif "maximum and minimum" in title.casefold():
-                    key = "minmaxtemp"
-                elif "3hrs" in title.casefold():
-                    key = "rainfall3hrs"
-                else:
-                    key = "rainfall24h"
-                infos[key] = {"info": title, "data": {}}
-                trs = table.find_all("tr")
-                for tr in trs:
-                    tds = tr.find_all("td")
-                    for itd, td in enumerate(tds):
-                        if td.text.strip().replace(" ", "").isalpha():
-                            try:
-                                # infos.append(td.text.strip())
-                                # infos.append(tds[itd+1].text.strip())
-                                if key == "minmaxtemp":
-                                    # cls.print(tds)
-                                    infos[key]["data"][td.text.strip()] = {}
-                                    infos[key]["data"][td.text.strip()]["min"] = tds[
-                                        itd + 1
-                                    ].text.strip()
-                                    infos[key]["data"][td.text.strip()]["max"] = tds[
-                                        itd + 2
-                                    ].text.strip()
+        infos = {
+            "rainfall24h": {},
+            "rainfall3hrs": {},
+            "wind": {},
+            "humidity": {},
+            "minmaxtemp": {},
+        }
 
-                                else:
-                                    infos[key]["data"][td.text.strip()] = tds[
-                                        itd + 1
-                                    ].text.strip()
+        for i, table in enumerate(tables):
+            title = weather_info[i].replace("\r", "").replace("\n", "")
+            if "humidity" in title.casefold():
+                key = "humidity"
+            elif "wind" in title.casefold():
+                key = "wind"
+            elif "maximum and minimum" in title.casefold():
+                key = "minmaxtemp"
+            elif "3hrs" in title.casefold():
+                key = "rainfall3hrs"
+            else:
+                key = "rainfall24h"
+            infos[key] = {"info": title, "data": {}}
+            trs = table.find_all("tr")
+            for tr in trs:
+                tds = tr.find_all("td")
+                for itd, td in enumerate(tds):
+                    if td.text.strip().replace(" ", "").isalpha():
+                        try:
+                            # infos.append(td.text.strip())
+                            # infos.append(tds[itd+1].text.strip())
+                            if key == "minmaxtemp":
+                                # cls.print(tds)
+                                infos[key]["data"][td.text.strip()] = {}
+                                infos[key]["data"][td.text.strip()]["min"] = tds[
+                                    itd + 1
+                                ].text.strip()
+                                infos[key]["data"][td.text.strip()]["max"] = tds[
+                                    itd + 2
+                                ].text.strip()
 
-                            except Exception:
-                                # cls.print(e)
-                                pass
-            try:
-                cls.add_to_cache("latest", infos)
-            except:
-                pass
+                            else:
+                                infos[key]["data"][td.text.strip()] = tds[
+                                    itd + 1
+                                ].text.strip()
+
+                        except Exception:
+                            # cls.print(e)
+                            pass
+
         return infos
 
     @classmethod
