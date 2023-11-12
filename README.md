@@ -340,82 +340,67 @@ Run
 
 # Changelog
 
+```
+2.8.8
+🖌️ Rearrange display of today command
+🔧 Remove latest data from cache as need last 3hrs
 
-## 2.8.1
+2.8.7
+🔧 Lots of fixes
+🔧 Tests
+🎉 Customizable cache path
 
-- Feat cache
-- 2.8.2 Fix imports
-- 2.8.3 Fix key error
-- 2.8.4 Feat resist cache perms
-- 2.8.5 Fix cache not found on perms error
-- 2.8.6 Fix none error on no cache data
-- 2.8.7 Lots of fixes, tests + customizable cache path
+2.8.3: 🔧 Fix key error
+2.8.2: 🔧 Fix imports
+2.8.4: ✨ Feat resist cache permission issues
+2.8.5: 🔧 Fix cache not found on perms error
+2.8.6: 🔧 Fix none error on no cache data
+2.8.1: 🔥 Feat cache
+2.8.0: 🎉 Add UV index
 
-## 2.8.0
+2.7.8
+🔧 Fixes
+🛩️ Debian package published
 
-- Uv index
+2.7.0
+🎉 Add latest data in API
+🎉 Add today command
 
-## 2.7.8
+2.6.0
+🎉 Add tide
+🎉 Add rainfall 
 
-- Fixes
-- Debian package published
+2.4.0: 🎉 Add today info
+2.3.3: 🔧 Fix broken install
 
-## 2.7.0
+2.3.0
+🔧 Fix get_eclipse_raw bug
+✨ Add debug mode
 
-- Add latest data in API + today
+2.2.1: 🔧 Fix get_moonphase bug
+2.2.0: 🎉 Add print commands and API
 
-## 2.6.0
+2.1.0
+🔧 Fix get_moonphase
+🎉 Add get_equinoxes
+🎉 Add get_solstices
+🎉 Add get_equinoxes
 
-- Add tide
-- Add rainfall 
+2.0.2: 🔧 Fix broken install
 
-## 2.4.0
+2.0.1
+📑 Add venv docs
+📑 Add global settings docs
 
--  Add today info
-
-## 2.3.3
-
--  Fix broken install
-
-## 2.3.0
-
-- Fix get_eclipse_raw bug
-- Add debug mode
-
-## 2.2.1
-
-- Fix get_moonphase bug
-
-## 2.2.0
-
-- Add print commands and API
-
-## 2.1.0
-
-- Fix get_moonphase
-- Add get_equinoxes
-- Add get_solstices
-- Add get_equinoxes
-
-## 2.0.2
-
-- Fix broken install
-
-### 2.0.1
-
-
-- Add venv docs
-- Add global settings docs
-
-### 2.0.0
-
-- Add Meteo with classmethod
-- Add internet check
-- Add global settings
-- Add headers change option
-- Add get_sunrisemu
-- Add get_sunriserodr
-- Tests basics
+2.0.0
+🎉 Add Meteo with classmethod
+🎉 Add internet check
+🎉 Add global settings
+🎉 Add headers change option
+🎉 Add get_sunrisemu
+🎉 Add get_sunriserodr
+🔧 Tests basics
+```
 
 # Debian
 
