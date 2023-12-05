@@ -342,6 +342,7 @@ Run
 
 ```
 2.8.8
+🔧 Set cache path to current directory
 🖌️ Rearrange display of today command
 🔧 Remove latest data from cache as need last 3hrs
 
