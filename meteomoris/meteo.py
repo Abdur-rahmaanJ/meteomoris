@@ -27,17 +27,8 @@ import json
 #     open(path, 'wb').write(r.content)
 
 
-def site_package_path():
-    paths = site.getsitepackages()
-    for p in paths:
-        if p[len(p) - len("site-packages") :] == "site-packages":
-            return p
-
-    raise Exception("Path could not be found")
-
-
 def cache_path():
-    return os.path.join(site_package_path(), "meteomoris_cache.json")
+    return os.path.join(".", "meteomoris_cache.json")
 
 
 class Meteo:
