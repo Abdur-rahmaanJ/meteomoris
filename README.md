@@ -341,6 +341,9 @@ Run
 # Changelog
 
 ```
+2.9.0
+🎉 Add version cli command
+
 2.8.8
 🔧 Set cache path to current directory
 🖌️ Rearrange display of today command
