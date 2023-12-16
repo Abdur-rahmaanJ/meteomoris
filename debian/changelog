@@ -1,3 +1,9 @@
+meteomoris (2.9.0) jammy; urgency=medium
+
+  * Add version cli command
+
+ -- Abdur-Rahmaan Janhangeer <arj.python@gmail.com>  Sat, 16 Dec 2023 15:05:00 +0400
+
 meteomoris (2.8.8) jammy; urgency=medium
 
   * Fix cache path
