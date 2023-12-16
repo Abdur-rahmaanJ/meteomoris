@@ -1,6 +1,6 @@
 import click
 from meteomoris import *
-
+import meteomoris
 
 @click.group()
 def cli():
@@ -59,6 +59,11 @@ def message(links):
 @cli.command(help="Ultra-violet Index")
 def uvindex():
     get_uvindex(print=True)
+
+@cli.command(help="Tool version")
+def version():
+    version_string = f"🌤️  Metemoris version: {meteomoris.__version__}"
+    click.echo(version_string)
 
 
 def main():
