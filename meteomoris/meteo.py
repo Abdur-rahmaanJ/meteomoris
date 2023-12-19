@@ -1027,10 +1027,7 @@ class Meteo:
             # cls.print(month)
 
             forecast = cls.get_weekforecast(day=0)
-            try:
-                moonphase = cls.get_moonphase()["{} {}".format(month, year)]
-            except:
-                skip_moonphase = True
+
             if country == "mu":
                 sunrise = cls.get_sunrisemu()
                 try:
@@ -1054,26 +1051,17 @@ class Meteo:
 
             col_elems = []
 
-            if not skip_moonphase:
-                for phase in moonphase:
-                    if moonphase[phase]["date"] == day:
-                        elements = []
-                        elements.extend(
-                            [
-                                phase.title(),
-                                "today at",
-                                "[green]{}:{}[/green]".format(
-                                    moonphase[phase]["hour"], moonphase[phase]["minute"]
-                                ),
-                            ]
-                        )
 
-                        moonphase_string = " ".join(elements)
-                        break
 
-                    else:
-                        moonphase_string = ""
-
+            today_moonphase = cls.get_today_moonphase()
+            if today_moonphase:
+                moonphase_title = today_moonphase['title'].title()
+                moonphase_hour = today_moonphase['hour']
+                moonphase_minute = today_moonphase['minute']
+                moonphase_string = f"{moonphase_title} today at [green]{moonphase_hour}:{moonphase_minute}[/green]"
+            else:
+                moonphase_string = ""
+            
             eclipse_elements = []
             for eclipse in cls.get_eclipses():
                 if (
