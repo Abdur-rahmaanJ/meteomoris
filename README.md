@@ -249,6 +249,12 @@ dict_keys(['february', 'march'])
     'port-louis': 'Extreme', 
     'plaisance': 'Low'
 }
+>>> get_today_moonphase() # {} if nothing today
+{
+    'title': 'first quarter', 
+    'hour': 22, 
+    'minute': 39
+}
 ```
 
 # Cli
