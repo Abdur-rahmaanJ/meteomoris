@@ -143,7 +143,8 @@ dict_keys(['february', 'march'])
     'info': 'The eclipse will not be visible in Mauritius, Rodrigues, St. Brandon and Agalega.',
     'start': {'date': 30, 'hour': 22, 'minute': 45, 'month': 'april'},
     'status': 'partial',
-    'type': 'sun'
+    'type': 'sun',
+    'title': ''
  },
  ...
  {
@@ -151,7 +152,8 @@ dict_keys(['february', 'march'])
     'info': 'The eclipse will not be visible in Mauritius, Rodrigues, St. Brandon and Agalega.',
     'start': {'date': 8, 'hour': 12, 'minute': 2, 'month': 'november'},
     'status': 'total',
-    'type': 'moon'
+    'type': 'moon',
+    'title': ''
  }
 ]
 
@@ -254,6 +256,11 @@ dict_keys(['february', 'march'])
     'title': 'first quarter', 
     'hour': 22, 
     'minute': 39
+}
+>>> get_today_eclipse() # {} if nothing today
+{
+    'start': eclispe_json,
+    'end': eclipse_json
 }
 ```
 
