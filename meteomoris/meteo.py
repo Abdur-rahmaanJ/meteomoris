@@ -975,6 +975,34 @@ class Meteo:
     def get_solstices(cls):
         return cls.get_eclipses_raw()["solstices"]
 
+
+    @classmethod
+    def get_today_moonphase(cls):
+        day = datetime.datetime.now().day
+        month = calendar.month_name[datetime.datetime.now().month].casefold()
+        year = datetime.datetime.now().year
+        skip_moonphase = False
+        try:
+            moonphase = cls.get_moonphase()["{} {}".format(month, year)]
+        except:
+            skip_moonphase = True
+
+        info = {}
+
+        if not skip_moonphase:
+            for phase in moonphase:
+                if moonphase[phase]["date"] == day:
+
+                    info = {
+                        "title": phase,
+                        "hour": moonphase[phase]["hour"],
+                        "minute": moonphase[phase]["minute"]
+                    }
+                    break
+
+        return info
+
+
     @classmethod
     def print_today(cls, country="mu"):
         cls.check_internet()
