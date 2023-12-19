@@ -981,6 +981,7 @@ class Meteo:
         day = datetime.datetime.now().day
         month = calendar.month_name[datetime.datetime.now().month].casefold()
         year = datetime.datetime.now().year
+
         skip_moonphase = False
         try:
             moonphase = cls.get_moonphase()["{} {}".format(month, year)]
@@ -1002,54 +1003,23 @@ class Meteo:
 
         return info
     
+    @classmethod
     def get_today_eclipse(cls):
-        day = datetime.datetime.now().day
-        month = calendar.month_name[datetime.datetime.now().month].casefold()
-        year = datetime.datetime.now().year
+        day = datetime.datetime.now().day # int 20
+        month = calendar.month_name[datetime.datetime.now().month].casefold() # december
+        year = datetime.datetime.now().year # int 2023 
 
         info = {}
-        eclipse_elements = []
 
         for eclipse in cls.get_eclipses():
             if (
                 eclipse["start"]["date"] == day
                 and eclipse["start"]["month"] == month
             ):
-                eclipse_elements.extend(
-                    [
-                        eclipse["title"],
-                        "starts today at",
-                        "[green]{}:{}[/green]".format(
-                            eclipse["start"]["hour"], eclipse["start"]["minute"]
-                        ),
-                        eclipse["info"],
-                    ]
-                )
-                info["start"] = {
-                    "title": eclipse["title"],
-                    "hour": eclipse["start"]["hour"],
-                    "minute": eclipse["start"]["minute"]
-                }
+                info["start"] = eclipse
 
             if eclipse["end"]["date"] == day and eclipse["end"]["month"] == month:
-                eclipse_elements.extend(
-                    [
-                        "\n",
-                        eclipse["title"],
-                        "ends today at",
-                        "[green]{}:{}[/green]".format(
-                            eclipse["end"]["hour"], eclipse["end"]["minute"]
-                        ),
-                        eclipse["info"],
-                    ]
-                )
-                info["end"] = {
-                    "title": eclipse["title"],
-                    "hour": eclipse["end"]["hour"],
-                    "minute": eclipse["end"]["minute"]
-                }
-
-        eclipse_string = " ".join(eclipse_elements).replace("\n ", "\n")
+                info["end"] = eclipse
 
         return info
 
@@ -1072,10 +1042,7 @@ class Meteo:
             day = datetime.datetime.now().day
             month = calendar.month_name[datetime.datetime.now().month].casefold()
             year = datetime.datetime.now().year
-            skip_moonphase = None
-            # cls.print(day)
-            # cls.print(year)
-            # cls.print(month)
+
 
             forecast = cls.get_weekforecast(day=0)
 
@@ -1092,14 +1059,6 @@ class Meteo:
                 except KeyError:
                     sun = sunrise[month][int(day)]
 
-            # cls.print(forecast)
-
-            # day_ = 22
-            # month_ = 'january'
-
-            # day = day_
-            # month = month_
-
             col_elems = []
 
 
@@ -1112,39 +1071,39 @@ class Meteo:
                 moonphase_string = f"{moonphase_title} today at [green]{moonphase_hour}:{moonphase_minute}[/green]"
             else:
                 moonphase_string = ""
-            
+
+
+            eclipse_today = cls.get_today_eclipse()
             eclipse_elements = []
-            for eclipse in cls.get_eclipses():
-                if (
-                    eclipse["start"]["date"] == day
-                    and eclipse["start"]["month"] == month
-                ):
+            if eclipse_today:
+                if "start" in eclipse_today:
+                    elipse_today_start = eclipse_today["start"]
                     eclipse_elements.extend(
                         [
-                            eclipse["title"],
+                            elipse_today_start["title"],
                             "starts today at",
                             "[green]{}:{}[/green]".format(
-                                eclipse["start"]["hour"], eclipse["start"]["minute"]
+                                elipse_today_start["start"]["hour"], elipse_today_start["start"]["minute"]
                             ),
-                            eclipse["info"],
+                            elipse_today_start["info"],
                         ]
                     )
+                if "end" in eclipse_today:
+                    eclipse_today_end = eclipse_today["end"]
 
-                if eclipse["end"]["date"] == day and eclipse["end"]["month"] == month:
                     eclipse_elements.extend(
                         [
                             "\n",
-                            eclipse["title"],
+                            eclipse_today_end["title"],
                             "ends today at",
                             "[green]{}:{}[/green]".format(
-                                eclipse["end"]["hour"], eclipse["end"]["minute"]
+                                eclipse_today_end["end"]["hour"], eclipse_today_end["end"]["minute"]
                             ),
-                            eclipse["info"],
+                            eclipse_today_end["info"],
                         ]
                     )
-
             eclipse_string = " ".join(eclipse_elements).replace("\n ", "\n")
-            # col_elems.append(Panel(string, expand=True, title="Eclipse"))
+
 
             for equinox in cls.get_equinoxes():
                 if equinox["day"] == day and equinox["month"] == month:
@@ -1207,7 +1166,7 @@ class Meteo:
             eclipse_panel = Panel(eclipse_string, expand=True, title="Eclipse")
             uv_panel = Panel(uv_string, expand=True, title="Ultra-Violet")
 
-            if not skip_moonphase:
+            if today_moonphase:
                 moonphase_panel = Panel(
                     moonphase_string, expand=True, title="Moon phase"
                 )
