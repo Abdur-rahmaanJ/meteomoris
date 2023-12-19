@@ -354,8 +354,11 @@ Run
 # Changelog
 
 ```
-2.9.0
-🎉 Add version cli command
+2.10.0
+🎉 get_today_moonphase
+🎉 get_today_eclipse
+
+2.9.0: 🎉 Add version cli command
 
 2.8.8
 🔧 Set cache path to current directory
