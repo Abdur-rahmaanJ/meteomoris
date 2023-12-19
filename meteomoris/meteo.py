@@ -1001,6 +1001,57 @@ class Meteo:
                     break
 
         return info
+    
+    def get_today_eclipse(cls):
+        day = datetime.datetime.now().day
+        month = calendar.month_name[datetime.datetime.now().month].casefold()
+        year = datetime.datetime.now().year
+
+        info = {}
+        eclipse_elements = []
+
+        for eclipse in cls.get_eclipses():
+            if (
+                eclipse["start"]["date"] == day
+                and eclipse["start"]["month"] == month
+            ):
+                eclipse_elements.extend(
+                    [
+                        eclipse["title"],
+                        "starts today at",
+                        "[green]{}:{}[/green]".format(
+                            eclipse["start"]["hour"], eclipse["start"]["minute"]
+                        ),
+                        eclipse["info"],
+                    ]
+                )
+                info["start"] = {
+                    "title": eclipse["title"],
+                    "hour": eclipse["start"]["hour"],
+                    "minute": eclipse["start"]["minute"]
+                }
+
+            if eclipse["end"]["date"] == day and eclipse["end"]["month"] == month:
+                eclipse_elements.extend(
+                    [
+                        "\n",
+                        eclipse["title"],
+                        "ends today at",
+                        "[green]{}:{}[/green]".format(
+                            eclipse["end"]["hour"], eclipse["end"]["minute"]
+                        ),
+                        eclipse["info"],
+                    ]
+                )
+                info["end"] = {
+                    "title": eclipse["title"],
+                    "hour": eclipse["end"]["hour"],
+                    "minute": eclipse["end"]["minute"]
+                }
+
+        eclipse_string = " ".join(eclipse_elements).replace("\n ", "\n")
+
+        return info
 
 
     @classmethod
