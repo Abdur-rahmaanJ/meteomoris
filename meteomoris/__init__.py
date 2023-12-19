@@ -18,5 +18,7 @@ get_solstices = Meteo.get_solstices
 get_tides = Meteo.get_tides
 get_latest = Meteo.get_latest
 get_uvindex = Meteo.get_uvindex
+get_today_eclipse = Meteo.get_today_eclipse
+get_today_moonphase = Meteo.get_today_moonphase
 
 __version__ = "2.9.0"
