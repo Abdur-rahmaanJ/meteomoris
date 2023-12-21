@@ -262,6 +262,11 @@ dict_keys(['february', 'march'])
     'start': eclispe_json,
     'end': eclipse_json
 }
+>>> get_today_sunrise("mu")
+{
+    'rise': '05:53', 
+    'set': '18:53'
+}
 ```
 
 # Cli
