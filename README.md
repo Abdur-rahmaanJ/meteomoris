@@ -370,8 +370,9 @@ Run
 # Changelog
 
 ```
-2.11.0
+latest
 🎉 get_today_sunrise
+🎉 get_today_forecast
 
 2.10.0
 🎉 get_today_moonphase
