@@ -21,4 +21,4 @@ get_uvindex = Meteo.get_uvindex
 get_today_eclipse = Meteo.get_today_eclipse
 get_today_moonphase = Meteo.get_today_moonphase
 
-__version__ = "2.10.0"
+__version__ = "2.11.0"
