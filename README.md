@@ -278,6 +278,8 @@ dict_keys(['february', 'march'])
  'sea condition': 'moderate',
  'wind': 'SE20'
 }
+>>> get_today_tides()
+['09:27', '59', '23:37', '58', '03:27', '41', '16:55', '30']
 ```
 
 # Cli
