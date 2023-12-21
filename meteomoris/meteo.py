@@ -1049,6 +1049,18 @@ class Meteo:
     @classmethod
     def get_today_forecast(cls):
         return cls.get_weekforecast(day=0)
+    
+    @classmethod
+    def get_today_tides(cls):
+        day = datetime.datetime.now().day
+        month = calendar.month_name[datetime.datetime.now().month].casefold()
+        tides_all = cls.get_tides()
+        try:
+            tides = tides_all["months"][month][str(day)]
+        except KeyError:
+            tides = tides_all["months"][month][int(day)]
+        
+        return tides
 
     @classmethod
     def print_today(cls, country="mu"):
