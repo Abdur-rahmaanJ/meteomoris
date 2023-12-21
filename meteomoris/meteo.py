@@ -1068,18 +1068,7 @@ class Meteo:
 
             forecast = cls.get_weekforecast(day=0)
 
-            if country == "mu":
-                sunrise = cls.get_sunrisemu()
-                try:
-                    sun = sunrise[month][str(day)]
-                except KeyError:
-                    sun = sunrise[month][int(day)]
-            else:
-                sunrise = cls.get_sunriserodr()
-                try:
-                    sun = sunrise[month][str(day)]
-                except KeyError:
-                    sun = sunrise[month][int(day)]
+            sun = cls.get_today_sunrise(country)
 
             col_elems = []
 
