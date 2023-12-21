@@ -1070,7 +1070,7 @@ class Meteo:
             year = datetime.datetime.now().year
 
 
-            forecast = cls.get_weekforecast(day=0)
+            forecast = cls.get_today_forecast()
 
             sun = cls.get_today_sunrise(country)
 
