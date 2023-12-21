@@ -1022,7 +1022,29 @@ class Meteo:
                 info["end"] = eclipse
 
         return info
-
+    
+    @classmethod 
+    def get_today_sunrise(cls, country):
+        '''
+        
+            return 
+                {'rise': '05:53', 'set': '18:53'}
+        '''
+        day = datetime.datetime.now().day # int 20
+        month = calendar.month_name[datetime.datetime.now().month].casefold() # december
+        if country == "mu":
+            sunrise = cls.get_sunrisemu()
+            try:
+                sun = sunrise[month][str(day)]
+            except KeyError:
+                sun = sunrise[month][int(day)]
+        else:
+            sunrise = cls.get_sunriserodr()
+            try:
+                sun = sunrise[month][str(day)]
+            except KeyError:
+                sun = sunrise[month][int(day)]
+        return sun 
 
     @classmethod
     def print_today(cls, country="mu"):
