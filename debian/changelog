@@ -1,3 +1,9 @@
+meteomoris (2.11.0) jammy; urgency=medium
+
+  * 🎉 get_today_sunrise
+  * 🎉 get_today_forecast
+  * 🎉 get_today_tides
+
 meteomoris (2.9.0) jammy; urgency=medium
 
   * Add version cli command
