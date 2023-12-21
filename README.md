@@ -375,6 +375,7 @@ Run
 latest
 🎉 get_today_sunrise
 🎉 get_today_forecast
+🎉 get_today_tides
 
 2.10.0
 🎉 get_today_moonphase
