@@ -267,6 +267,17 @@ dict_keys(['february', 'march'])
     'rise': '05:53', 
     'set': '18:53'
 }
+>>> get_today_forecast()
+{
+ 'condition': 'Few passing showers',
+ 'date': 'Apr 25',
+ 'day': 'Thu',
+ 'max': '31�',
+ 'min': '20�',
+ 'probability': 'Medium',
+ 'sea condition': 'moderate',
+ 'wind': 'SE20'
+}
 ```
 
 # Cli
