@@ -359,6 +359,9 @@ Run
 # Changelog
 
 ```
+2.11.0
+🎉 get_today_sunrise
+
 2.10.0
 🎉 get_today_moonphase
 🎉 get_today_eclipse
