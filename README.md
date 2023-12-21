@@ -372,7 +372,7 @@ Run
 # Changelog
 
 ```
-latest
+2.11.0
 🎉 get_today_sunrise
 🎉 get_today_forecast
 🎉 get_today_tides
