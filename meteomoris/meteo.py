@@ -1047,6 +1047,10 @@ class Meteo:
         return sun 
 
     @classmethod
+    def get_today_forecast(cls):
+        return cls.get_weekforecast(day=0)
+
+    @classmethod
     def print_today(cls, country="mu"):
         cls.check_internet()
         """
