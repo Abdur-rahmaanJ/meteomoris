@@ -1223,11 +1223,8 @@ class Meteo:
             #
             ###
 
-            tides_all = cls.get_tides()
-            try:
-                tides = tides_all["months"][month][str(day)]
-            except KeyError:
-                tides = tides_all["months"][month][int(day)]
+            tides = cls.get_today_tides()
+            
             tidetable = Table()
 
             tidetable.add_column(
