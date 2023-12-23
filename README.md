@@ -280,6 +280,10 @@ dict_keys(['february', 'march'])
 }
 >>> get_today_tides()
 ['09:27', '59', '23:37', '58', '03:27', '41', '16:55', '30']
+>>> get_today_solstice()
+{
+    'day': 21, 'hour': 13, 'minute': 13, 'month': 'june', 'year': 2022
+}
 ```
 
 # Cli
