@@ -1022,6 +1022,17 @@ class Meteo:
                 info["end"] = eclipse
 
         return info
+
+    @classmethod
+    def get_today_solstice(cls):
+        day = datetime.datetime.now().day # int 20
+        month = calendar.month_name[datetime.datetime.now().month].casefold() # december
+        info = {}
+        for solstice in cls.get_solstices():
+            if solstice["day"] == day and solstice["month"] == month:
+                return solstice 
+        
+        return info
     
     @classmethod 
     def get_today_sunrise(cls, country):
@@ -1148,21 +1159,24 @@ class Meteo:
                 else:
                     equinox_string = ""
 
-            for solstice in cls.get_solstices():
-                if solstice["day"] == day and solstice["month"] == month:
-                    elements = []
-                    elements.extend(
-                        [
-                            "Solstice today at",
-                            "[green]{}:{}[/green]".format(
-                                solstice["hour"], solstice["minute"]
-                            ),
-                        ]
-                    )
 
-                    solstice_string = " ".join(elements)
-                else:
-                    solstice_string = ""
+            
+
+            solstice = cls.get_today_solstice()
+            if solstice:
+                elements = []
+                elements.extend(
+                    [
+                        "Solstice today at",
+                        "[green]{}:{}[/green]".format(
+                            solstice["hour"], solstice["minute"]
+                        ),
+                    ]
+                )
+
+                solstice_string = " ".join(elements)
+            else:
+                solstice_string = ""
 
             uv_string = ""
             for region, status in cls.get_uvindex().items():
