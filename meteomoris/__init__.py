@@ -23,4 +23,4 @@ get_today_moonphase = Meteo.get_today_moonphase
 get_today_solstice = Meteo.get_today_solstice
 get_today_equinox = Meteo.get_today_equinox
 
-__version__ = "2.11.0"
+__version__ = "2.12.0"
