@@ -284,6 +284,10 @@ dict_keys(['february', 'march'])
 {
     'day': 21, 'hour': 13, 'minute': 13, 'month': 'june', 'year': 2022
 }
+>>> get_today_equinox()
+{
+    'day': 20, 'hour': 19, 'minute': 33, 'month': 'march', 'year': 2022
+}
 ```
 
 # Cli
