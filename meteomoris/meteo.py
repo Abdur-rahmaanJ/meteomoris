@@ -1153,24 +1153,22 @@ class Meteo:
             eclipse_string = " ".join(eclipse_elements).replace("\n ", "\n")
 
 
-            for equinox in cls.get_equinoxes():
-                if equinox["day"] == day and equinox["month"] == month:
-                    elements = []
-                    elements.extend(
-                        [
-                            "Equinox today at",
-                            "[green]{}:{}[/green]".format(
-                                equinox["hour"], equinox["minute"]
-                            ),
-                        ]
-                    )
+            equinox = cls.get_today_equinox()
+            if equinox:
+                elements = []
+                elements.extend(
+                    [
+                        "Equinox today at",
+                        "[green]{}:{}[/green]".format(
+                            equinox["hour"], equinox["minute"]
+                        ),
+                    ]
+                )
 
-                    equinox_string = " ".join(elements)
-                else:
-                    equinox_string = ""
+                equinox_string = " ".join(elements)
+            else:
+                equinox_string = ""
 
-
-            
 
             solstice = cls.get_today_solstice()
             if solstice:
