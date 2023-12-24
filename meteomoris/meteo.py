@@ -1034,6 +1034,16 @@ class Meteo:
         
         return info
     
+    @classmethod
+    def get_today_equinox(cls):
+        day = datetime.datetime.now().day # int 20
+        month = calendar.month_name[datetime.datetime.now().month].casefold() # december
+        info = {}
+        for equinox in cls.get_equinoxes():
+            if equinox["day"] == day and equinox["month"] == month:
+                return equinox
+        return info 
+    
     @classmethod 
     def get_today_sunrise(cls, country):
         '''
