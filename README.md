@@ -34,7 +34,7 @@ NOTE: Add `print=True` to get a tabular representation
    ('The Mauritius Meteorological Services (Warnings) Regulations 2023', 'http://metservice.intnet.mu/about-us/legislations/'), 
    ('Heavy Rain warning Bulletin for Mauritius issued at 0500 hours on Thursday 19 January 2023, valid until 0500 hours  Friday 20 January 2023.', 'http://metservice.intnet.mu/warning-bulletin-special-weather.php')
 ]
->>> get_special_whether_bulletin()
+>>> get_special_weather_bulletin()
 Special Weather Bulletin
 Thu, Jan 19, 2023Heavy Rain warning Bulletin for Mauritius issued at 0500 hours on Thursday 19 January 2023, valid until 0500 hours  Friday 20 January 2023. 
  
