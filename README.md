@@ -380,6 +380,9 @@ Run
 # Changelog
 
 ```
+latest
+🔧 Fix: Add remaining get_today apis to init
+
 2.12.0
 🎉 get_today_solstice
 🎉 get_today_equinox
