@@ -382,6 +382,7 @@ Run
 ```
 latest
 🎉 get_today_solstice
+🎉 get_today_equinox
 
 2.11.0
 🎉 get_today_sunrise
