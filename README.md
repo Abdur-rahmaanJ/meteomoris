@@ -380,7 +380,7 @@ Run
 # Changelog
 
 ```
-latest
+2.12.0
 🎉 get_today_solstice
 🎉 get_today_equinox
 
