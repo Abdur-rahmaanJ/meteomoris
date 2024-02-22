@@ -380,7 +380,7 @@ Run
 # Changelog
 
 ```
-latest
+2.12.1
 🔧 Fix: Add remaining get_today apis to init
 ✨ Fix: Improve get_tides parsing mechanism to be more robust
 
