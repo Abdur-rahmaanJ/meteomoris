@@ -382,6 +382,7 @@ Run
 ```
 latest
 🔧 Fix: Add remaining get_today apis to init
+✨ Fix: Improve get_tides parsing mechanism to be more robust
 
 2.12.0
 🎉 get_today_solstice
