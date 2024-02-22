@@ -1390,52 +1390,11 @@ class Meteo:
             URL = "http://metservice.intnet.mu/sun-moon-and-tides-tides-mauritius.php"
             r = requests.get(URL, headers=cls.headers)
             soup = BeautifulSoup(r.content, "html.parser")
-            tables = soup.find_all("table")
-            # cls.print(len(tables))
-            if len(tables) == 1:
-                text_arr = tables[0].text.split()
-                text_arr_cleaned = []
-                months = []
-                years = []
-                month_names = [m.casefold() for m in calendar.month_name if m]
-                for t in text_arr:
-                    if t.casefold() in month_names:
-                        months.append(t.casefold())
-                        text_arr_cleaned.append(t.casefold())
-                    elif re.findall("\d\d\d\d", t):
-                        text_arr_cleaned.append(t.casefold())
-                        years.append(t)
-                    elif t.casefold() not in [
-                        "date",
-                        "1st",
-                        "2nd",
-                        "(local)",
-                        "(height)",
-                        "tide",
-                        "low",
-                        "high",
-                        "time",
-                        "height",
-                        "(cm)",
-                    ]:
-                        text_arr_cleaned.append(t)
 
-            # cls.print(text_arr_cleaned)
-            #     [
-            # 'july',
-            # '2023',
-            # '1',
-            # '12:02',
-            # '54',
-            # '23:11',
-            # '57',
-            # '05:29',
-            # '6',
-            # '17:28',
-            # '28',
-            # '2',
-            # cls.print(months)
-            # cls.print(years)
+            text = soup.text.strip().split('\n')
+            text = [t for t in text if t.strip()]
+            months = [calendar.month_name[i].casefold() for i in range(1, 13)]
+
             tide_info = {
                 "months": {},
                 "month_format": {
@@ -1452,35 +1411,41 @@ class Meteo:
                 },
                 "meta": {"months": []},
             }
-            for i, month in enumerate(months):
-                tide_info["meta"]["months"].append([months[i], years[i]])
-
-            tc_i = 0
-            current_month = None
-            month_pad = 0
-            while tc_i < len(text_arr_cleaned):
-                text = text_arr_cleaned[tc_i]
-                if text in month_names:
-                    # current_month = f'{text_arr_cleaned[tc_i]}_{text_arr_cleaned[tc_i+1]}'
-                    current_month = f"{text_arr_cleaned[tc_i]}"
-                    tide_info["months"][current_month] = {}
-                    month_pad += 1
-                    tc_i += 2
-                    continue
-                else:
-                    if (tc_i - (2 * month_pad)) % 9 == 0:
-                        date = int(text_arr_cleaned[tc_i])
-                        tide_info["months"][current_month][date] = text_arr_cleaned[
-                            tc_i + 1 : tc_i + 9
-                        ]
-                        tc_i += 8
-                tc_i += 1
-
             try:
-                cls.add_to_cache("tides", tide_info)
+                i = 0
+                while i < len(text):
+                    line = text[i]
+                    
+                    # checking for month
+                    try:
+                        words = line.split(' ')
+                        if words[0].casefold() in months:
+                            words[0] = words[0].casefold()
+                            words[1] = int(words[1])
+                            tide_info['meta']['months'].append([words[0], words[1]])
+                            tide_info['months'][words[0]] = {}
+                    except:
+                        pass
+
+                    if tide_info['meta']['months']:
+                        if re.findall('^\d{1,2}$', line):
+                            target_month_index = len(tide_info['meta']['months']) - 1
+                            target_month = tide_info['meta']['months'][target_month_index][0]
+                            tide_info['months'][target_month][int(line)] = []
+                            tide_info['months'][target_month][int(line)].append(text[i+1])
+                            tide_info['months'][target_month][int(line)].append(text[i+2])
+                            tide_info['months'][target_month][int(line)].append(text[i+3])
+                            tide_info['months'][target_month][int(line)].append(text[i+4])
+                            tide_info['months'][target_month][int(line)].append(text[i+5])
+                            tide_info['months'][target_month][int(line)].append(text[i+6])
+                            tide_info['months'][target_month][int(line)].append(text[i+7])
+                            tide_info['months'][target_month][int(line)].append(text[i+8])
+                            i += 9
+                            continue
+
+                    i += 1
             except Exception as e:
-                raise e
-            # cls.print(tide_info)
+                cls.print(e)
         return tide_info
 
     @classmethod
