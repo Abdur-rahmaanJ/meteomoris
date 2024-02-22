@@ -1,5 +1,10 @@
 meteomoris (2.12.0) jammy; urgency=medium
 
+  * 🔧 Fix: Add remaining get_today apis to init
+  * ✨ Fix: Improve get_tides parsing mechanism to be more robust
+
+meteomoris (2.12.0) jammy; urgency=medium
+
   * 🎉 get_today_solstice
   * 🎉 get_today_equinox
 
