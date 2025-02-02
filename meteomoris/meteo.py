@@ -747,222 +747,229 @@ class Meteo:
     @classmethod
     def get_eclipses_raw(cls):
         eclipses_data = None
-
         try:
-            cache = cls.get_from_cache("eclipses_raw")
-        except:
-            # TODO Add debug if permm error cache
-            cache = False
-        if not cls.CACHE_PERMS:
-            cache = False
-        if cache:
-            eclipses_data = cache
-        else:
-            cls.check_internet()
-            URL = "http://metservice.intnet.mu/sun-moon-and-tides-info-eclipses.php"
-            r = requests.get(URL, headers=cls.headers)
-            soup = BeautifulSoup(r.content, "html.parser")
+            try:
+                cache = cls.get_from_cache("eclipses_raw")
+            except:
+                # TODO Add debug if permm error cache
+                cache = False
+            if not cls.CACHE_PERMS:
+                cache = False
+            if cache:
+                eclipses_data = cache
+            else:
+                cls.check_internet()
+                URL = "http://metservice.intnet.mu/sun-moon-and-tides-info-eclipses.php"
+                r = requests.get(URL, headers=cls.headers)
+                soup = BeautifulSoup(r.content, "html.parser")
 
-            tables = soup.find_all("table")
+                tables = soup.find_all("table")
 
-            len_tables = len(tables)
-            data = {"eclipses": []}
-            year = None
-            eclipse_info = {}
-            all_tables = []
-            equinoxes = []
-            # cls.print(str(len(tables)))
-            for table_index, table in enumerate(tables):
-                current_list = table.text.strip().split("\n")
-                current_list = [e for e in current_list if bool(e.strip())]
-                if table_index == 0:
+                len_tables = len(tables)
+                data = {"eclipses": []}
+                year = None
+                eclipse_info = {}
+                all_tables = []
+                equinoxes = []
+                # cls.print(str(len(tables)))
+                for table_index, table in enumerate(tables):
+                    current_list = table.text.strip().split("\n")
+                    current_list = [e for e in current_list if bool(e.strip())]
+                    if table_index == 0:
+                        pass
+
+                    elif table_index == len(tables) - 1:
+                        equinoxes = current_list
+                    else:
+                        all_tables += current_list
+                """
+                [
+                {
+                    'end': {'date': 1, 'hour': 2, 'minute': 37, 'month': 'may'},
+                    'info': 'The eclipse will not be visible in Mauritius, Rodrigues, St. Brandon and Agalega.',
+                    'start': {'date': 30, 'hour': 22, 'minute': 45, 'month': 'april'},
+                    'status': 'partial',
+                    'type': 'sun'
+                },
+                ...
+                {
+                    'end': {'date': 8, 'hour': 17, 'minute': 56, 'month': 'november'},
+                    'info': 'The eclipse will not be visible in Mauritius, Rodrigues, St. Brandon and Agalega.',
+                    'start': {'date': 8, 'hour': 12, 'minute': 2, 'month': 'november'},
+                    'status': 'total',
+                    'type': 'moon'
+                }
+                ]
+                """
+                eclipse_info = []
+
+                if cls.DEBUG:
+                    cls.print(all_tables)
+                """
+                [
+                    'Annular-Total eclipse of the Sun - April 20',
+                    'The eclipse begins on 20 April at 05h34 and ends on 20 April at 10h59.',
+                    'The penumbral part of the eclipse will be visible in Mauritius, Rodrigues, St. Brandon but will not be visible in 
+                Agalega.',
+                    'Penumbral eclipse of the Moon - May 05',
+                    'The eclipse begins on 05 May at 19h12 and ends at 23h33.',
+                    'The eclipse will be visible in Mauritius, Rodrigues, St. Brandon and Agalega.',
+                    'Annular eclipse of the Sun - October 14-15',
+                    'The eclipse begins on 14 October at 19h04 and ends on 15 October at 00h55.',
+                    'The eclipse will not be visible in Mauritius, Rodrigues, St. Brandon and Agalega.',
+                    'Partial eclipse of the Moon - October 28-29',
+                    'The eclipse begins on 28 October at 23h34 and ends on 29 October at 02h28.',
+                    'The eclipse will be visible in Mauritius, Rodrigues, St. Brandon and Agalega.'
+                ]
+                """
+                for table_index, row in enumerate(all_tables):
+                    info = {}
+                    if ("eclipse of the" in row.casefold()) and ("-" in row.casefold()):
+                        info["title"] = row.split(" - ")[0].strip()
+                        info["info"] = all_tables[table_index + 2]
+                        if "sun" in info["title"].casefold():
+                            info["type"] = "sun"
+                        elif "moon" in info["title"].casefold():
+                            info["type"] = "moon"
+                        info["status"] = info["title"].casefold().split()[0].strip()
+
+                        # info['date'] = row.split(' - ')[1].strip()
+
+                        next_row = all_tables[table_index + 1]
+
+                        next_row_words = next_row.split()
+                        for i, word in enumerate(next_row_words):
+                            if word == "begins":
+                                if next_row_words[i + 1] == "on":
+                                    info["start"] = {}
+                                    info["start"]["date"] = int(next_row_words[i + 2])
+                                    info["start"]["month"] = next_row_words[
+                                        i + 3
+                                    ].casefold()
+                                    info["start"]["hour"] = int(
+                                        next_row_words[i + 5].split("h")[0].strip(".")
+                                    )
+                                    info["start"]["minute"] = int(
+                                        next_row_words[i + 5].split("h")[1].strip(".")
+                                    )
+                            if word == "ends":
+                                if next_row_words[i + 1] == "on":
+                                    info["end"] = {}
+                                    info["end"]["date"] = int(next_row_words[i + 2])
+                                    info["end"]["month"] = next_row_words[i + 3].casefold()
+                                    info["end"]["hour"] = int(
+                                        next_row_words[i + 5].split("h")[0].strip(".")
+                                    )
+                                    info["end"]["minute"] = int(
+                                        next_row_words[i + 5].split("h")[1].strip(".")
+                                    )
+                                elif next_row_words[i + 1] == "at":
+                                    info["end"] = {}
+                                    info["end"]["date"] = int(info["start"]["date"])
+                                    info["end"]["month"] = info["start"]["month"].casefold()
+                                    info["end"]["hour"] = int(
+                                        next_row_words[i + 2].split("h")[0].strip(".")
+                                    )
+                                    info["end"]["minute"] = int(
+                                        next_row_words[i + 2].split("h")[1].strip(".")
+                                    )
+
+                        eclipse_info.append(info)
+
+                if cls.DEBUG:
+                    cls.print(equinoxes)
+                """
+                [
+                    'EQUINOXES and SOLSTICES - 2023',
+                    'Equinoxes\xa0\xa0\xa0 :\xa0 \xa0March 21 at 01h24 and September 23 at 10h50.',
+                    'Solstices\xa0\xa0\xa0 :\xa0 \xa0June 21 at 18h57 and December 22 at 07h27.'
+                ]
+                """
+                equinox = [e.strip().casefold().strip(".") for e in equinoxes[1].split()]
+                solstice = [e.strip().casefold().strip(".") for e in equinoxes[2].split()]
+                year = equinoxes[0].split(" - ")[1].strip().casefold()
+                year = int(year)
+                """
+
+                >>> get_equinoxes()
+                [
+                {
+                    'day': 20, 'hour': 19, 'minute': 33, 'month': 'march', 'year': 2022
+                },
+                {
+                'day': 23, 'hour': 5, 'minute': 3, 'month': 'september', 'year': 2022
+                }
+                ]
+
+                >>> get_solstices()
+                [
+                {
+                    'day': 21, 'hour': 13, 'minute': 13, 'month': 'june', 'year': 2022
+                },
+                {
+                    'day': 22, 'hour': 1, 'minute': 48, 'month': 'december', 'year': 2022
+                }
+                ]"""
+                equinox_info = None
+                for i, e in enumerate(equinox):
+                    if e == "and":
+                        equinox_info = [
+                            {
+                                "day": int(equinox[i - 3]),
+                                "month": equinox[i - 4],
+                                "year": year,
+                                "hour": int(equinox[i - 1].split("h")[0]),
+                                "minute": int(equinox[i - 1].split("h")[1]),
+                            },
+                            {
+                                "day": int(equinox[i + 2]),
+                                "month": equinox[i + 1],
+                                "year": year,
+                                "hour": int(equinox[i + 4].split("h")[0]),
+                                "minute": int(equinox[i + 4].split("h")[1]),
+                            },
+                        ]
+
+                solstice_info = None
+                for i, e in enumerate(equinox):
+                    if e == "and":
+                        solstice_info = [
+                            {
+                                "day": int(solstice[i - 3]),
+                                "month": solstice[i - 4],
+                                "year": year,
+                                "hour": int(solstice[i - 1].split("h")[0]),
+                                "minute": int(solstice[i - 1].split("h")[1]),
+                            },
+                            {
+                                "day": int(solstice[i + 2]),
+                                "month": solstice[i + 1],
+                                "year": year,
+                                "hour": int(solstice[i + 4].split("h")[0]),
+                                "minute": int(solstice[i + 4].split("h")[1]),
+                            },
+                        ]
+
+                eclipses_data = {
+                    "eclipses": eclipse_info,
+                    "equinoxes": equinox_info,
+                    "solstices": solstice_info,
+                }
+
+                try:
+                    cls.add_to_cache("eclipses_raw", eclipses_data)
+                except:
                     pass
 
-                elif table_index == len(tables) - 1:
-                    equinoxes = current_list
-                else:
-                    all_tables += current_list
-            """
-            [
-            {
-                'end': {'date': 1, 'hour': 2, 'minute': 37, 'month': 'may'},
-                'info': 'The eclipse will not be visible in Mauritius, Rodrigues, St. Brandon and Agalega.',
-                'start': {'date': 30, 'hour': 22, 'minute': 45, 'month': 'april'},
-                'status': 'partial',
-                'type': 'sun'
-            },
-            ...
-            {
-                'end': {'date': 8, 'hour': 17, 'minute': 56, 'month': 'november'},
-                'info': 'The eclipse will not be visible in Mauritius, Rodrigues, St. Brandon and Agalega.',
-                'start': {'date': 8, 'hour': 12, 'minute': 2, 'month': 'november'},
-                'status': 'total',
-                'type': 'moon'
-            }
-            ]
-            """
-            eclipse_info = []
-
-            if cls.DEBUG:
-                cls.print(all_tables)
-            """
-            [
-                'Annular-Total eclipse of the Sun - April 20',
-                'The eclipse begins on 20 April at 05h34 and ends on 20 April at 10h59.',
-                'The penumbral part of the eclipse will be visible in Mauritius, Rodrigues, St. Brandon but will not be visible in 
-            Agalega.',
-                'Penumbral eclipse of the Moon - May 05',
-                'The eclipse begins on 05 May at 19h12 and ends at 23h33.',
-                'The eclipse will be visible in Mauritius, Rodrigues, St. Brandon and Agalega.',
-                'Annular eclipse of the Sun - October 14-15',
-                'The eclipse begins on 14 October at 19h04 and ends on 15 October at 00h55.',
-                'The eclipse will not be visible in Mauritius, Rodrigues, St. Brandon and Agalega.',
-                'Partial eclipse of the Moon - October 28-29',
-                'The eclipse begins on 28 October at 23h34 and ends on 29 October at 02h28.',
-                'The eclipse will be visible in Mauritius, Rodrigues, St. Brandon and Agalega.'
-            ]
-            """
-            for table_index, row in enumerate(all_tables):
-                info = {}
-                if ("eclipse of the" in row.casefold()) and ("-" in row.casefold()):
-                    info["title"] = row.split(" - ")[0].strip()
-                    info["info"] = all_tables[table_index + 2]
-                    if "sun" in info["title"].casefold():
-                        info["type"] = "sun"
-                    elif "moon" in info["title"].casefold():
-                        info["type"] = "moon"
-                    info["status"] = info["title"].casefold().split()[0].strip()
-
-                    # info['date'] = row.split(' - ')[1].strip()
-
-                    next_row = all_tables[table_index + 1]
-
-                    next_row_words = next_row.split()
-                    for i, word in enumerate(next_row_words):
-                        if word == "begins":
-                            if next_row_words[i + 1] == "on":
-                                info["start"] = {}
-                                info["start"]["date"] = int(next_row_words[i + 2])
-                                info["start"]["month"] = next_row_words[
-                                    i + 3
-                                ].casefold()
-                                info["start"]["hour"] = int(
-                                    next_row_words[i + 5].split("h")[0].strip(".")
-                                )
-                                info["start"]["minute"] = int(
-                                    next_row_words[i + 5].split("h")[1].strip(".")
-                                )
-                        if word == "ends":
-                            if next_row_words[i + 1] == "on":
-                                info["end"] = {}
-                                info["end"]["date"] = int(next_row_words[i + 2])
-                                info["end"]["month"] = next_row_words[i + 3].casefold()
-                                info["end"]["hour"] = int(
-                                    next_row_words[i + 5].split("h")[0].strip(".")
-                                )
-                                info["end"]["minute"] = int(
-                                    next_row_words[i + 5].split("h")[1].strip(".")
-                                )
-                            elif next_row_words[i + 1] == "at":
-                                info["end"] = {}
-                                info["end"]["date"] = int(info["start"]["date"])
-                                info["end"]["month"] = info["start"]["month"].casefold()
-                                info["end"]["hour"] = int(
-                                    next_row_words[i + 2].split("h")[0].strip(".")
-                                )
-                                info["end"]["minute"] = int(
-                                    next_row_words[i + 2].split("h")[1].strip(".")
-                                )
-
-                    eclipse_info.append(info)
-
-            if cls.DEBUG:
-                cls.print(equinoxes)
-            """
-            [
-                'EQUINOXES and SOLSTICES - 2023',
-                'Equinoxes\xa0\xa0\xa0 :\xa0 \xa0March 21 at 01h24 and September 23 at 10h50.',
-                'Solstices\xa0\xa0\xa0 :\xa0 \xa0June 21 at 18h57 and December 22 at 07h27.'
-            ]
-            """
-            equinox = [e.strip().casefold().strip(".") for e in equinoxes[1].split()]
-            solstice = [e.strip().casefold().strip(".") for e in equinoxes[2].split()]
-            year = equinoxes[0].split(" - ")[1].strip().casefold()
-            year = int(year)
-            """
-
-            >>> get_equinoxes()
-            [
-            {
-                'day': 20, 'hour': 19, 'minute': 33, 'month': 'march', 'year': 2022
-            },
-            {
-            'day': 23, 'hour': 5, 'minute': 3, 'month': 'september', 'year': 2022
-            }
-            ]
-
-            >>> get_solstices()
-            [
-            {
-                'day': 21, 'hour': 13, 'minute': 13, 'month': 'june', 'year': 2022
-            },
-            {
-                'day': 22, 'hour': 1, 'minute': 48, 'month': 'december', 'year': 2022
-            }
-            ]"""
-            equinox_info = None
-            for i, e in enumerate(equinox):
-                if e == "and":
-                    equinox_info = [
-                        {
-                            "day": int(equinox[i - 3]),
-                            "month": equinox[i - 4],
-                            "year": year,
-                            "hour": int(equinox[i - 1].split("h")[0]),
-                            "minute": int(equinox[i - 1].split("h")[1]),
-                        },
-                        {
-                            "day": int(equinox[i + 2]),
-                            "month": equinox[i + 1],
-                            "year": year,
-                            "hour": int(equinox[i + 4].split("h")[0]),
-                            "minute": int(equinox[i + 4].split("h")[1]),
-                        },
-                    ]
-
-            solstice_info = None
-            for i, e in enumerate(equinox):
-                if e == "and":
-                    solstice_info = [
-                        {
-                            "day": int(solstice[i - 3]),
-                            "month": solstice[i - 4],
-                            "year": year,
-                            "hour": int(solstice[i - 1].split("h")[0]),
-                            "minute": int(solstice[i - 1].split("h")[1]),
-                        },
-                        {
-                            "day": int(solstice[i + 2]),
-                            "month": solstice[i + 1],
-                            "year": year,
-                            "hour": int(solstice[i + 4].split("h")[0]),
-                            "minute": int(solstice[i + 4].split("h")[1]),
-                        },
-                    ]
-
+            return eclipses_data
+        except:
             eclipses_data = {
-                "eclipses": eclipse_info,
-                "equinoxes": equinox_info,
-                "solstices": solstice_info,
-            }
+                    "eclipses": [],
+                    "equinoxes": [],
+                    "solstices": [],
+                }
 
-            try:
-                cls.add_to_cache("eclipses_raw", eclipses_data)
-            except:
-                pass
-
-        return eclipses_data
-
+            return eclipses_data
     @classmethod
     def get_eclipses(cls):
         return cls.get_eclipses_raw()["eclipses"]
@@ -1594,7 +1601,10 @@ class Meteo:
 
                 today = uvindex.find("h4")
 
-                uv_status = today.text
+                try:
+                    uv_status = today.text
+                except:
+                    uv_status = '---'
                 data[region] = uv_status
             try:
                 cls.add_to_cache("uvindex", data)
