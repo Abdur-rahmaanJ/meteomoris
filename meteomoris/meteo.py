@@ -1138,7 +1138,7 @@ class Meteo:
                 "Tide", justify="left", style="slate_blue3", no_wrap=True
             )
             tidetable.add_column("Time", justify="left", style="gold3", no_wrap=True)
-            tidetable.add_column("Height (mm)", style="dark_cyan")
+            tidetable.add_column("Height (cm)", style="dark_cyan")
 
             # tides_str = '\n'.join([
             #     '{}: {}'.format(tides_all['month_format']['date'][0], tides[0]),
