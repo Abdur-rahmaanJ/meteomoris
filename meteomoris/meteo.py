@@ -1112,7 +1112,7 @@ class Meteo:
             )
 
             sun_panel = Panel(
-                "rises at {}\nsets at {}".format(sun["rise"], sun["set"]),
+                    "[gold3]Sunrise: {}[/gold3]\t[red]Sunset: {}[/red]".format(sun["rise"], sun["set"]),
                 expand=True,
                 title="Sun",
             )
