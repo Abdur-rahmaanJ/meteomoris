@@ -1108,7 +1108,7 @@ class Meteo:
                     "", expand=True, title="Moon phase"
                 )
             condition_panel = Panel(
-                forecast["condition"], expand=True, title="Contition"
+                forecast["condition"], expand=True, title="Condition"
             )
 
             sun_panel = Panel(
