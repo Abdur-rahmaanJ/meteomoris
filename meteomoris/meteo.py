@@ -1085,7 +1085,7 @@ class Meteo:
                 uv_string += f"[magenta]{region}[/magenta]: {status}\n"
             uv_string.strip("\n")
 
-            temp_str = "[b]{}-{}[/]".format(forecast["min"], forecast["max"])
+            temp_str = "Min: {}C [b]\tMax: {}C[/b]".format(forecast["min"], forecast["max"])
             temp_panel = Panel(temp_str, expand=True, title="Temperature")
 
             wind_panel = Panel(forecast["wind"], expand=True, title="Wind")
