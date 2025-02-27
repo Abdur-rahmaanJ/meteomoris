@@ -1470,18 +1470,20 @@ class Meteo:
             data = {}
 
             for region in regions:
-                URL = f"https://en.tutiempo.net/ultraviolet-index/{region}.html"
-                r = requests.get(URL, headers=cls.headers)
-                soup = BeautifulSoup(r.content, "html.parser")
-
-                uvindex = soup.find("div", attrs={"class": "UvIndex"})
-
-                today = uvindex.find("h4")
 
                 try:
-                    uv_status = today.text
-                except:
+                    URL = f"https://en.tutiempo.net/ultraviolet-index/{region}.html"
+                    r = requests.get(URL, headers=cls.headers)
+                    soup = BeautifulSoup(r.content, "html.parser")
+                    soup = soup.find_all(class_="diauv")[0]
+                    uv_index = soup.select_one(".vtd").text.strip()
+                    uv_description = soup.select_one(".tvtd").text.strip()
+
+                    uv_status = f'{uv_description}'
+                except Exception as e:
+                    raise e
                     uv_status = '---'
+
                 data[region] = uv_status
             try:
                 cls.add_to_cache("uvindex", data)
