@@ -621,8 +621,8 @@ class Meteo:
                 cols = [ele.text.strip() for ele in cols]
 
                 if i == 0:
-                    month1 = re.sub("\d+", "", cols[1].lower()).strip()
-                    month2 = re.sub("\d+", "", cols[2].lower()).strip()
+                    month1 = re.sub("\\d+", "", cols[1].lower()).strip()
+                    month2 = re.sub("\\d+", "", cols[2].lower()).strip()
                     data = {month1: {}, month2: {}}
 
                 elif i > 1:
@@ -633,18 +633,19 @@ class Meteo:
                     m2_set = cols[4]
 
                     if m1_rise and m1_set:
-                        data[month1][date] = {"rise": m1_rise, "set": m1_set}
+                        data[month1][str(date)] = {"rise": m1_rise, "set": m1_set}
                     if m2_rise and m2_set:
-                        data[month2][date] = {"rise": m2_rise, "set": m2_set}
+                        data[month2][str(date)] = {"rise": m2_rise, "set": m2_set}
             try:
                 cls.add_to_cache("sunrisemu", data)
             except:
                 pass
 
-        def get_sun_info(data, month, date, point):
-            try:
-                return "{}".format(data[month][date][point])
-            except:
+        def get_sun_info(data, month, date):
+            d = str(date)
+            if d in data[month]:
+                return "{} - {}".format(data[month][d]["rise"], data[month][d]["set"])
+            else:
                 return ""
 
         if print_:
@@ -657,11 +658,9 @@ class Meteo:
                 table.add_column(m, justify="left", no_wrap=True)
 
             for i in range(1, 32):
-                table.add_row(
-                    str(i).zfill(2),
-                    get_sun_info(data, months[0], i, "rise"),
-                    get_sun_info(data, months[1], i, "set"),
-                )
+                month1_data = get_sun_info(data, months[0], i)
+                month2_data = get_sun_info(data, months[1], i) 
+                table.add_row(str(i).zfill(2), month1_data, month2_data)
 
             console.print(table)
             return
@@ -709,18 +708,20 @@ class Meteo:
                     m2_set = cols[4]
 
                     if m1_rise and m1_set:
-                        data[month1][date] = {"rise": m1_rise, "set": m1_set}
+                        data[month1][str(date)] = {"rise": m1_rise, "set": m1_set}
                     if m2_rise and m2_set:
-                        data[month2][date] = {"rise": m2_rise, "set": m2_set}
+                        data[month2][str(date)] = {"rise": m2_rise, "set": m2_set}
+
             try:
                 cls.add_to_cache("sunriserodr", data)
             except:
                 pass
 
-        def get_sun_info(data, month, date, point):
-            try:
-                return "{}".format(data[month][date][point])
-            except:
+        def get_sun_info(data, month, date):
+            d = str(date)
+            if d in data[month]:
+                return "{} - {}".format(data[month][d]["rise"], data[month][d]["set"])
+            else:
                 return ""
 
         if print_:
@@ -733,11 +734,9 @@ class Meteo:
                 table.add_column(m, justify="left", no_wrap=True)
 
             for i in range(1, 32):
-                table.add_row(
-                    str(i).zfill(2),
-                    get_sun_info(data, months[0], i, "rise"),
-                    get_sun_info(data, months[1], i, "set"),
-                )
+                month1_data = get_sun_info(data, months[0], i)
+                month2_data = get_sun_info(data, months[1], i) 
+                table.add_row(str(i).zfill(2), month1_data, month2_data)
 
             console.print(table)
             return
@@ -941,12 +940,14 @@ class Meteo:
                 sun = sunrise[month][str(day)]
             except KeyError:
                 sun = sunrise[month][int(day)]
-        else:
+        elif country == "rodr":
             sunrise = cls.get_sunriserodr()
             try:
                 sun = sunrise[month][str(day)]
             except KeyError:
                 sun = sunrise[month][int(day)]
+        else:
+            assert False, "Unexpected country"
         return sun 
 
     @classmethod
