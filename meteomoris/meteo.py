@@ -1083,7 +1083,7 @@ class Meteo:
                 elif status.lower() == "low":
                     status = f"[green]{status}[/green]"
                 uv_string += f"[magenta]{region}[/magenta]: {status}\n"
-            uv_string.strip("\n")
+            uv_string = uv_string.strip("\n")
 
             temp_str = "Min: {}C [b]\tMax: {}C[/b]".format(forecast["min"], forecast["max"])
             temp_panel = Panel(temp_str, expand=True, title="Temperature")
@@ -1096,7 +1096,7 @@ class Meteo:
             solstice_panel = Panel(solstice_string, expand=True, title="Solstice")
             equinox_panel = Panel(equinox_string, expand=True, title="Equinox")
             eclipse_panel = Panel(eclipse_string, expand=True, title="Eclipse")
-            uv_panel = Panel(uv_string, expand=True, title="Ultra-Violet")
+            uv_panel = Panel(uv_string, expand=True, title="UV Index")
 
 
             if today_moonphase:
@@ -1505,9 +1505,9 @@ class Meteo:
                 elif status.lower() == "low":
                     status = f"[green]{status}[/green]"
                 uv_string += f"[magenta]{region}[/magenta]: {status}\n"
-            uv_string.strip("\n")
+            uv_string = uv_string.strip("\n")
             uv_panel = Panel(
-                uv_string, expand=True, title="Ultra-Violet index for Mauritius"
+                uv_string, expand=True, title="UV Index"
             )
             cls.print(uv_panel)
         else:
