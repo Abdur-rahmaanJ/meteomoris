@@ -380,6 +380,11 @@ Run
 # Changelog
 
 ```
+2.12.3
+🔧 Fix: Rewrote eclipse, equinox and solstice
+⚠️ rm: Remove get_eclipse_raw
+🔧 Fix: adapt to changing uv html structure change
+
 2.12.1
 🔧 Fix: Add remaining get_today apis to init
 ✨ Fix: Improve get_tides parsing mechanism to be more robust
