@@ -26,4 +26,4 @@ get_today_solstice = Meteo.get_today_solstice
 get_today_equinox = Meteo.get_today_equinox
 get_today_tides = Meteo.get_today_tides
 
-__version__ = "2.12.2"
+__version__ = "2.12.3"
