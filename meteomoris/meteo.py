@@ -797,7 +797,8 @@ class Meteo:
                         data[month2][str(date)] = {"rise": m2_rise, "set": m2_set}
             try:
                 cls.add_to_cache("moonrisemu", data)
-            except:
+            except Exception:
+                # Cache write failures are non-fatal; continue without cached data.
                 pass
 
         def get_moon_info(data, month, date):
