@@ -878,7 +878,8 @@ class Meteo:
 
             try:
                 cls.add_to_cache("moonriserodr", data)
-            except:
+            except Exception:
+                # Caching failures are non-fatal; ignore them so main functionality is not affected
                 pass
 
         def get_moon_info(data, month, date):
