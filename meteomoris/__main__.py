@@ -27,6 +27,16 @@ def sunriserodr():
     get_sunriserodr(print=True)
 
 
+@cli.command(help="Moonrise (Mauritius)")
+def moonrisemu():
+    get_moonrisemu(print=True)
+
+
+@cli.command(help="Moonrise (Rodrigues)")
+def moonriserodr():
+    get_moonriserodr(print=True)
+
+
 @cli.command(help="Moonphase")
 def moonphase():
     get_moonphase(print=True)

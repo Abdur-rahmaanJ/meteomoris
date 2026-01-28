@@ -744,6 +744,170 @@ class Meteo:
         return data
 
     @classmethod
+    def get_moonrisemu(cls, print=False):
+        print_ = print
+
+        data = None
+        try:
+            cache = cls.get_from_cache("moonrisemu")
+        except:
+            # TODO Add debug if permm error cache
+            cache = False
+        if not cls.CACHE_PERMS:
+            cache = False
+        if cache:
+            data = cache
+        else:
+            cls.check_internet()
+
+            URL = "http://metservice.intnet.mu/sun-moon-and-tides-moonrise-moonset-mauritius.php"
+            r = requests.get(URL, headers=cls.headers)
+            soup = BeautifulSoup(r.content, "html.parser")
+
+            table = soup.find("table")
+            table_body = table.find("tbody")
+
+            rows = table_body.find_all("tr")
+            data = dict()
+            for i, row in enumerate(rows):
+                cols = row.find_all("td")
+
+                cols = [ele.text.strip() for ele in cols]
+
+                if i == 0:
+                    month1 = re.sub("\\d+", "", cols[1].lower()).strip()
+                    month2 = re.sub("\\d+", "", cols[2].lower()).strip()
+                    data = {month1: {}, month2: {}}
+
+                elif i > 2:  # Skip row 1 (PHASE/MOON headers) and row 2 (RISE/SET headers)
+                    try:
+                        date = int(cols[0])
+                    except (ValueError, IndexError):
+                        continue  # Skip non-numeric rows
+                    # Month 1 data: skip phase column (cols[1]), get rise (cols[2]) and set (cols[3])
+                    m1_rise = cols[2] if len(cols) > 2 else ""
+                    m1_set = cols[3] if len(cols) > 3 else ""
+                    # Month 2 data: skip phase column (cols[4]), get rise (cols[5]) and set (cols[6])
+                    m2_rise = cols[5] if len(cols) > 5 else ""
+                    m2_set = cols[6] if len(cols) > 6 else ""
+
+                    if m1_rise and m1_set and m1_rise != "-":
+                        data[month1][str(date)] = {"rise": m1_rise, "set": m1_set}
+                    if m2_rise and m2_set and m2_rise != "-":
+                        data[month2][str(date)] = {"rise": m2_rise, "set": m2_set}
+            try:
+                cls.add_to_cache("moonrisemu", data)
+            except:
+                pass
+
+        def get_moon_info(data, month, date):
+            d = str(date)
+            if d in data[month]:
+                return "{} - {}".format(data[month][d]["rise"], data[month][d]["set"])
+            else:
+                return ""
+
+        if print_:
+            console = Console()
+            table = Table(title="Moonrise (Mauritius)")
+
+            table.add_column("", justify="left", no_wrap=True)
+            months = list(data.keys())
+            for m in months:
+                table.add_column(m, justify="left", no_wrap=True)
+
+            for i in range(1, 32):
+                month1_data = get_moon_info(data, months[0], i)
+                month2_data = get_moon_info(data, months[1], i) 
+                table.add_row(str(i).zfill(2), month1_data, month2_data)
+
+            console.print(table)
+            return
+        return data
+
+    @classmethod
+    def get_moonriserodr(cls, print=False):
+        print_ = print
+        data = None
+        try:
+            cache = cls.get_from_cache("moonriserodr")
+        except:
+            # TODO Add debug if permm error cache
+            cache = False
+        if not cls.CACHE_PERMS:
+            cache = False
+        if cache:
+            data = cache
+        else:
+            cls.check_internet()
+            URL = "http://metservice.intnet.mu/sun-moon-and-tides-moonrise-moonset-rodrigues.php"
+            r = requests.get(URL, headers=cls.headers)
+            soup = BeautifulSoup(r.content, "html.parser")
+
+            table = soup.find("table")
+            table_body = table.find("tbody")
+
+            rows = table_body.find_all("tr")
+            data = dict()
+            for i, row in enumerate(rows):
+                cols = row.find_all("td")
+
+                cols = [ele.text.strip() for ele in cols]
+
+                if i == 0:
+                    month1 = cols[1].lower()
+                    month2 = cols[2].lower()
+                    data = {month1: {}, month2: {}}
+
+                elif i > 2:  # Skip row 1 (PHASE/MOON headers) and row 2 (RISE/SET headers)
+                    try:
+                        date = int(cols[0])
+                    except (ValueError, IndexError):
+                        continue  # Skip non-numeric rows
+                    # Month 1 data: skip phase column (cols[1]), get rise (cols[2]) and set (cols[3])
+                    m1_rise = cols[2] if len(cols) > 2 else ""
+                    m1_set = cols[3] if len(cols) > 3 else ""
+                    # Month 2 data: skip phase column (cols[4]), get rise (cols[5]) and set (cols[6])
+                    m2_rise = cols[5] if len(cols) > 5 else ""
+                    m2_set = cols[6] if len(cols) > 6 else ""
+
+                    if m1_rise and m1_set and m1_rise != "-":
+                        data[month1][str(date)] = {"rise": m1_rise, "set": m1_set}
+                    if m2_rise and m2_set and m2_rise != "-":
+                        data[month2][str(date)] = {"rise": m2_rise, "set": m2_set}
+
+            try:
+                cls.add_to_cache("moonriserodr", data)
+            except:
+                pass
+
+        def get_moon_info(data, month, date):
+            d = str(date)
+            if d in data[month]:
+                return "{} - {}".format(data[month][d]["rise"], data[month][d]["set"])
+            else:
+                return ""
+
+        if print_:
+            console = Console()
+            table = Table(title="Moonrise (Rodrigues)")
+
+            table.add_column("", justify="left", no_wrap=True)
+            months = list(data.keys())
+            for m in months:
+                table.add_column(m, justify="left", no_wrap=True)
+
+            for i in range(1, 32):
+                month1_data = get_moon_info(data, months[0], i)
+                month2_data = get_moon_info(data, months[1], i) 
+                table.add_row(str(i).zfill(2), month1_data, month2_data)
+
+            console.print(table)
+            return
+
+        return data
+
+    @classmethod
     def get_eclipse_html(cls):
         if cls.get_from_cache("eclipse_html"):
             html_content = cls.get_from_cache("eclipse_html")
