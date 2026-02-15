@@ -11,6 +11,8 @@ get_eclipse_text = Meteo.get_eclipse_text
 test = Meteo.test
 get_sunrisemu = Meteo.get_sunrisemu
 get_sunriserodr = Meteo.get_sunriserodr
+get_moonrisemu = Meteo.get_moonrisemu
+get_moonriserodr = Meteo.get_moonriserodr
 get_eclipses = Meteo.get_eclipses
 get_equinoxes = Meteo.get_equinoxes
 get_solstices = Meteo.get_solstices
@@ -26,4 +28,6 @@ get_today_solstice = Meteo.get_today_solstice
 get_today_equinox = Meteo.get_today_equinox
 get_today_tides = Meteo.get_today_tides
 
-__version__ = "2.12.3"
+__version__ = "2.13.0"
+
+
