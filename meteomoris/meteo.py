@@ -634,8 +634,7 @@ class Meteo:
 
                     if m1_rise and m1_set:
                         data[month1][str(date)] = {"rise": m1_rise, "set": m1_set}
-                    if m2_rise and m2_set:
-                        data[month2][str(date)] = {"rise": m2_rise, "set": m2_set}
+
             try:
                 cls.add_to_cache("sunrisemu", data)
             except:
@@ -903,6 +902,7 @@ class Meteo:
                 month1_data = get_moon_info(data, months[0], i)
                 month2_data = get_moon_info(data, months[1], i) 
                 table.add_row(str(i).zfill(2), month1_data, month2_data)
+
 
             console.print(table)
             return
