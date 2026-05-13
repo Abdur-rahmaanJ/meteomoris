@@ -3,6 +3,20 @@ from collections import namedtuple
 Region = namedtuple("Region", ["name", "display_name"])
 
 
+class Result:
+    def __init__(self, success, data=None, error=None, errors=None,
+                 from_stale_cache=False, warnings=None):
+        self.success = success
+        self.data = data
+        self.error = error
+        self.errors = errors or []
+        self.from_stale_cache = from_stale_cache
+        self.warnings = warnings or []
+
+    def to_dict(self):
+        return self.data
+
+
 class Forecast:
     def __init__(self, day, date, condition, min_temp, max_temp, wind,
                  sea_condition="", probability=""):

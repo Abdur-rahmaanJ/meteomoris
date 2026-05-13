@@ -18,6 +18,11 @@ class State(Enum):
     RETURNING = auto()
     COMPLETED = auto()
     ERROR = auto()
+    RETRYING = auto()
+    STALE_CACHE_CHECK = auto()
+    STALE_CACHE = auto()
+    DEGRADED = auto()
+    ABORTED = auto()
 
 
 class Event(Enum):
@@ -36,3 +41,12 @@ class Event(Enum):
     RENDERED = auto()
     RETURN = auto()
     ERROR_HANDLED = auto()
+    TRANSIENT_FAILURE = auto()
+    PERMANENT_FAILURE = auto()
+    RETRY = auto()
+    RETRY_EXHAUSTED = auto()
+    STALE_FOUND = auto()
+    STALE_NOT_FOUND = auto()
+    CACHE_FAILED = auto()
+    ABORT = auto()
+    DEGRADE = auto()
