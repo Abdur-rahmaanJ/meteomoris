@@ -47,31 +47,35 @@ class InternetChecker:
 
 
 class Fetcher:
-    def __init__(self, headers=None):
+    def __init__(self, headers=None, timeout=30):
         self.headers = headers or HEADERS
         self.internet_checker = InternetChecker()
+        self.timeout = timeout
 
     def check_internet(self):
         return self.internet_checker.is_online()
 
-    def fetch(self, url):
+    def fetch(self, url, timeout=None):
         if url is None:
             return None
         try:
-            r = requests.get(url, headers=self.headers)
+            r = requests.get(
+                url, headers=self.headers,
+                timeout=timeout or self.timeout,
+            )
             r.raise_for_status()
             return r
         except requests.RequestException:
             return None
 
-    def fetch_html(self, url):
-        response = self.fetch(url)
+    def fetch_html(self, url, timeout=None):
+        response = self.fetch(url, timeout=timeout)
         if response is not None:
             return response.content
         return None
 
-    def fetch_text(self, url):
-        response = self.fetch(url)
+    def fetch_text(self, url, timeout=None):
+        response = self.fetch(url, timeout=timeout)
         if response is not None:
             return response.text
         return None
