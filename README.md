@@ -380,6 +380,20 @@ Run
 # Changelog
 
 ```
+2.13.0
+🎉 Major refactoring into modular architecture
+🎉 Add domain entity classes and data source registry
+🎉 Add FSM state machine with explicit transition table
+🎉 Add cache, fetcher, HTML parser, and renderer behavior modules
+🎉 Add retry policy with exponential backoff and fetcher timeout
+🎉 Add error data types, audit infrastructure, and Result type
+🎉 Add error logging to parser methods
+♻️ Delegate Meteo class to FSM dispatch
+♻️ Clean up facade and CLI imports
+🔧 Fix eclipse parsing and tide data retrieval
+🔧 Ensure stale cache path is reached after fetch retry exhaustion
+🧪 Add comprehensive unit tests (FSM states, parser, renderer, error-handling)
+
 2.12.3
 🔧 Fix: Rewrote eclipse, equinox and solstice
 ⚠️ rm: Remove get_eclipse_raw
