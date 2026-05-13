@@ -224,9 +224,9 @@ class DataLifecycleFSM:
                         self.state = State.FETCHING
                         self._retry_attempt += 1
                         continue
-                self._transition(Event.FETCH_FAILED)
+                self.state = State.STALE_CACHE_CHECK
                 return False
-        self._transition(Event.FETCH_FAILED)
+        self.state = State.STALE_CACHE_CHECK
         return False
 
     def _handle_no_internet(self):
@@ -254,6 +254,7 @@ class DataLifecycleFSM:
             if stale:
                 self.data = stale
                 self._stale_served = True
+                self._transition(Event.STALE_FOUND)
                 self._transition(Event.DATA_READY)
                 return self._make_result(True)
         return self._make_result(False)
