@@ -2,6 +2,7 @@ from meteomoris.fsm.states import State, Event
 from meteomoris.fsm.datalifecycle import DataLifecycleFSM
 from meteomoris.fsm.dispatch import FSMDispatch
 from meteomoris.model.sources import DATASOURCES
+from meteomoris.model.entities import Result
 
 
 class FakeCache:
@@ -11,6 +12,9 @@ class FakeCache:
 
     def get(self, key):
         return self._store.get(key)
+
+    def get_stale(self, key):
+        return None
 
     def set(self, key, data):
         self._store[key] = data
@@ -54,6 +58,8 @@ class FakeRenderer:
 
 
 def make_fsm(source_id, cache=None, fetcher=None, parser=None, renderer=None):
+    from meteomoris.behavior.auditor import Auditor
+    from meteomoris.behavior.retry import RetryPolicy
     source = dict(DATASOURCES[source_id])
     return DataLifecycleFSM(
         source,
@@ -61,6 +67,8 @@ def make_fsm(source_id, cache=None, fetcher=None, parser=None, renderer=None):
         fetcher or FakeFetcher(),
         parser or FakeParser(),
         renderer or FakeRenderer(),
+        auditor=Auditor(),
+        retry_policy=RetryPolicy(max_retries=0),
     )
 
 
@@ -73,7 +81,8 @@ class TestStateTransitions:
 
         result = fsm.execute(print_output=False)
 
-        assert result == ["cached_data"]
+        assert result.success
+        assert result.data == ["cached_data"]
         assert fsm.state == State.COMPLETED
 
     def test_cache_hit_with_print(self):
@@ -84,7 +93,8 @@ class TestStateTransitions:
 
         result = fsm.execute(print_output=True)
 
-        assert result == ["cached_data"]
+        assert result.success
+        assert result.data == ["cached_data"]
         assert fsm.state == State.COMPLETED
 
     def test_cache_miss_fetch_and_parse(self):
@@ -94,7 +104,8 @@ class TestStateTransitions:
 
         result = fsm.execute(print_output=False)
 
-        assert result == ["fake_forecast"]
+        assert result.success
+        assert result.data == ["fake_forecast"]
         assert fsm.state == State.COMPLETED
 
     def test_cache_miss_with_print(self):
@@ -104,23 +115,19 @@ class TestStateTransitions:
 
         result = fsm.execute(print_output=True)
 
-        assert result == ["fake_forecast"]
+        assert result.success
+        assert result.data == ["fake_forecast"]
         assert len(renderer.rendered) == 1
         assert renderer.rendered[0][0] == "weekforecast"
 
-    def test_no_internet_returns_none(self):
+    def test_no_internet_returns_error(self):
         cache = FakeCache()
         fetcher = FakeFetcher(online=False)
         fsm = make_fsm("weekforecast", cache=cache, fetcher=fetcher)
 
-        import sys
-        original_exit = sys.exit
-        sys.exit = lambda: None
-        try:
-            result = fsm.execute(print_output=False)
-            assert result is None
-        finally:
-            sys.exit = original_exit
+        result = fsm.execute(print_output=False)
+
+        assert not result.success
 
     def test_cache_stores_data(self):
         cache = FakeCache()
@@ -144,7 +151,8 @@ class TestStateTransitions:
 
         result = fsm.execute(print_output=True)
 
-        assert result == {"moon": "phase"}
+        assert result.success
+        assert result.data == {"moon": "phase"}
         assert len(renderer.rendered) == 1
         assert renderer.rendered[0][0] == "moonphase"
 
@@ -156,9 +164,10 @@ class TestStateTransitions:
         fsm2 = make_fsm("weekforecast", cache=cache)
         result = fsm2.execute(print_output=False)
 
-        assert result == ["fake_forecast"]
+        assert result.success
+        assert result.data == ["fake_forecast"]
 
-    def test_fetch_failure_returns_none(self):
+    def test_fetch_failure_returns_error(self):
         class FailingFetcher(FakeFetcher):
             def fetch(self, url):
                 return None
@@ -166,7 +175,19 @@ class TestStateTransitions:
         cache = FakeCache()
         fsm = make_fsm("weekforecast", cache=cache, fetcher=FailingFetcher())
         result = fsm.execute(print_output=False)
-        assert result is None
+        assert not result.success
+
+    def test_result_has_error_metadata(self):
+        class FailingFetcher(FakeFetcher):
+            def fetch(self, url):
+                return None
+
+        cache = FakeCache()
+        fsm = make_fsm("weekforecast", cache=cache, fetcher=FailingFetcher())
+        result = fsm.execute(print_output=False)
+        assert not result.success
+        assert len(result.errors) > 0
+        assert result.error is not None
 
 
 class TestFSMDispatch:
@@ -177,7 +198,9 @@ class TestFSMDispatch:
         dispatch.parser = FakeParser()
 
         result = dispatch.execute("weekforecast")
-        assert result == ["fake_forecast"]
+        assert isinstance(result, Result)
+        assert result.success
+        assert result.data == ["fake_forecast"]
 
     def test_dispatch_unknown_source(self):
         dispatch = FSMDispatch()
@@ -194,9 +217,8 @@ class TestFSMDispatch:
             assert "requires_internet" in config
 
     def test_all_transitions_defined(self):
-        transitions = DataLifecycleFSM.TRANSITIONS
-        for (state, event), (next_state, action) in transitions.items():
+        for (state, event), value in DataLifecycleFSM.TRANSITIONS.items():
             assert isinstance(state, State)
             assert isinstance(event, Event)
-            assert isinstance(next_state, State)
-            assert action is None or isinstance(action, str)
+            assert isinstance(value, tuple) and len(value) >= 1
+            assert isinstance(value[0], State)

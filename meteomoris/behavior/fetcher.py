@@ -20,9 +20,8 @@ HEADERS = {
 
 
 class InternetChecker:
-    def __init__(self, check_internet=True, exit_on_no_internet=True):
+    def __init__(self, check_internet=True):
         self.check_internet = check_internet
-        self.exit_on_no_internet = exit_on_no_internet
         self._already_checked = False
 
     def internet_present(self):
@@ -39,9 +38,6 @@ class InternetChecker:
     def is_online(self):
         if self.check_internet and not self._already_checked:
             if not self.internet_present():
-                print("No internet")
-                if self.exit_on_no_internet:
-                    sys.exit()
                 return False
         return True
 

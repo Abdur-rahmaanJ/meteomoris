@@ -16,6 +16,11 @@ def cache_path():
 
 
 def _to_dict(obj):
+    from .model.entities import Result
+    if isinstance(obj, Result):
+        if not obj.success and obj.data is None:
+            return None
+        obj = obj.data
     if hasattr(obj, "to_dict"):
         return obj.to_dict()
     if isinstance(obj, list):
@@ -41,6 +46,9 @@ class Meteo:
     DEBUG = False
     CACHE_PERMS = True
     CACHE_PATH = cache_path()
+    MAX_RETRIES = 3
+    FETCH_TIMEOUT = 30
+    ABORT_ON_NO_INTERNET = False
 
     today = str(datetime.date.today())
 
@@ -303,7 +311,10 @@ class Meteo:
 
     @classmethod
     def print_today(cls, country="mu"):
-        cls.check_internet()
+        if cls.EXIT_ON_NO_INTERNET and cls.CHECK_INTERNET:
+            if not cls.internet_present():
+                cls.print("[red]No internet connection[/red]")
+                return
         with cls.console.status("fetching", spinner="aesthetic"):
             if country not in ["mu", "rodr"]:
                 cls.print("[red]Country should be mu or rodr[/red]")

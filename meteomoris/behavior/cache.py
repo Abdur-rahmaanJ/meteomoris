@@ -38,7 +38,22 @@ class Cache:
             self.enabled = True
         except (FileNotFoundError, json.JSONDecodeError):
             self.enabled = False
+        except ValueError:
+            self._recover_corrupted_cache()
+            self.enabled = False
+            data = {}
         return data
+
+    def _recover_corrupted_cache(self):
+        import shutil
+        backup = self.cache_path + ".corrupted"
+        try:
+            shutil.copy2(self.cache_path, backup)
+            with open(self.cache_path, "w+") as f:
+                json.dump({}, f)
+        except OSError:
+            pass
+        self.enabled = True
 
     def get(self, key):
         if not self.enabled:
@@ -59,6 +74,18 @@ class Cache:
         if key not in cache_data.get(today, {}):
             return None
         return cache_data[today][key]
+
+    def get_stale(self, key):
+        if not self.enabled:
+            return None
+        cache_data = self._get_cache_data()
+        if cache_data is None:
+            return None
+        today = _get_today()
+        for day_key, day_data in cache_data.items():
+            if day_key != today and key in day_data:
+                return day_data[key]
+        return None
 
     def set(self, key, data):
         if not self.enabled:
