@@ -12,6 +12,23 @@ from ..model.entities import (
 
 
 class Parser:
+    def __init__(self, auditor=None):
+        self.auditor = auditor
+
+    def _warn(self, source, message):
+        if self.auditor:
+            from ..model.error import ErrorRecord, ErrorType
+            import datetime
+            self.auditor.record_error(ErrorRecord(
+                timestamp=datetime.datetime.now(),
+                source_id=source,
+                state=None,
+                error_type=ErrorType.PARSE,
+                message=message,
+                is_retryable=False,
+                attempt=0,
+            ))
+
     @staticmethod
     def parse_time_string(time_str):
         match = re.match(r"(\d{1,2})h(\d{2})", time_str)
@@ -23,6 +40,7 @@ class Parser:
         soup = BeautifulSoup(html, "html.parser")
         w_forecast = soup.find(attrs={"class": "daysforecast"})
         if w_forecast is None:
+            self._warn("weekforecast", "daysforecast section not found in HTML")
             return None
         week_forcecast = w_forecast.find_all(attrs={"class": "forecast"})
         week = []
@@ -55,6 +73,7 @@ class Parser:
         soup = BeautifulSoup(html, "html.parser")
         w_forecast = soup.find(attrs={"class": "city_forecast"})
         if w_forecast is None:
+            self._warn("cityforecast", "city_forecast section not found")
             return None
         week_forcecast = w_forecast.find_all(attrs={"class": "block"})
         week = []
@@ -79,9 +98,11 @@ class Parser:
         soup = BeautifulSoup(html, "html.parser")
         table = soup.find("table")
         if table is None:
+            self._warn("sunrise", "table not found in sunrise HTML")
             return None
         table_body = table.find("tbody")
         if table_body is None:
+            self._warn("sunrise", "tbody not found in sunrise table")
             return None
         rows = table_body.find_all("tr")
         data = {}
@@ -113,9 +134,11 @@ class Parser:
         soup = BeautifulSoup(html, "html.parser")
         table = soup.find("table")
         if table is None:
+            self._warn("moonrise", "table not found in moonrise HTML")
             return None
         table_body = table.find("tbody")
         if table_body is None:
+            self._warn("moonrise", "tbody not found in moonrise table")
             return None
         rows = table_body.find_all("tr")
         data = {}
@@ -179,8 +202,12 @@ class Parser:
                 phase2 = code_lookup.get(m2_phase)
                 if phase1:
                     data[month1][phase1] = MoonPhaseEntry(m1_date, m1_hour, m1_min)
+                else:
+                    self._warn("moonphase", "unknown phase code: {}".format(m1_phase))
                 if phase2:
                     data[month2][phase2] = MoonPhaseEntry(m2_date, m2_hour, m2_min)
+                else:
+                    self._warn("moonphase", "unknown phase code: {}".format(m2_phase))
         return data
 
     def parse_eclipses(self, html):

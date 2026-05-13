@@ -123,6 +123,7 @@ class DataLifecycleFSM:
                     return self._handle_fetch_failure()
 
             if self.state == State.PARSING:
+                self.parser.auditor = self.auditor
                 parser_method = getattr(
                     self.parser, self.source["parser"], None
                 )
