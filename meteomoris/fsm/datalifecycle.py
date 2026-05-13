@@ -11,29 +11,29 @@ from .states import State, Event
 
 class DataLifecycleFSM:
     TRANSITIONS = {
-        (State.IDLE, Event.REQUEST): (State.CACHE_CHECK, None),
-        (State.CACHE_CHECK, Event.CACHE_HIT): (State.CACHE_HIT, None),
-        (State.CACHE_CHECK, Event.CACHE_MISS): (State.CACHE_MISS, None),
-        (State.CACHE_HIT, Event.DATA_READY): (State.DATA_READY, None),
-        (State.CACHE_MISS, Event.INTERNET_OK): (State.FETCHING, None),
-        (State.CACHE_MISS, Event.NO_INTERNET): (State.NO_INTERNET, None),
-        (State.FETCHING, Event.FETCHED): (State.PARSING, None),
-        (State.FETCHING, Event.FETCH_FAILED): (State.ERROR, None),
-        (State.PARSING, Event.PARSED): (State.CACHING, None),
-        (State.PARSING, Event.PARSE_FAILED): (State.ERROR, None),
-        (State.CACHING, Event.CACHED): (State.DATA_READY, None),
-        (State.CACHING, Event.CACHE_FAILED): (State.DATA_READY, None),
-        (State.NO_INTERNET, Event.ABORT): (State.ABORTED, None),
-        (State.NO_INTERNET, Event.DEGRADE): (State.STALE_CACHE_CHECK, None),
-        (State.DATA_READY, Event.RENDER): (State.RENDERING, None),
-        (State.DATA_READY, Event.RETURN): (State.RETURNING, None),
-        (State.RENDERING, Event.RENDERED): (State.RETURNING, None),
-        (State.RETURNING, Event.RETURN): (State.COMPLETED, None),
-        (State.ERROR, Event.RETURN): (State.COMPLETED, None),
-        (State.STALE_CACHE_CHECK, Event.STALE_FOUND): (State.STALE_CACHE, None),
-        (State.STALE_CACHE_CHECK, Event.STALE_NOT_FOUND): (State.ERROR, None),
-        (State.STALE_CACHE, Event.DATA_READY): (State.DATA_READY, None),
-        (State.ABORTED, Event.RETURN): (State.COMPLETED, None),
+        (State.IDLE, Event.REQUEST): State.CACHE_CHECK,
+        (State.CACHE_CHECK, Event.CACHE_HIT): State.CACHE_HIT,
+        (State.CACHE_CHECK, Event.CACHE_MISS): State.CACHE_MISS,
+        (State.CACHE_HIT, Event.DATA_READY): State.DATA_READY,
+        (State.CACHE_MISS, Event.INTERNET_OK): State.FETCHING,
+        (State.CACHE_MISS, Event.NO_INTERNET): State.NO_INTERNET,
+        (State.FETCHING, Event.FETCHED): State.PARSING,
+        (State.FETCHING, Event.FETCH_FAILED): State.ERROR,
+        (State.PARSING, Event.PARSED): State.CACHING,
+        (State.PARSING, Event.PARSE_FAILED): State.ERROR,
+        (State.CACHING, Event.CACHED): State.DATA_READY,
+        (State.CACHING, Event.CACHE_FAILED): State.DATA_READY,
+        (State.NO_INTERNET, Event.ABORT): State.ABORTED,
+        (State.NO_INTERNET, Event.DEGRADE): State.STALE_CACHE_CHECK,
+        (State.DATA_READY, Event.RENDER): State.RENDERING,
+        (State.DATA_READY, Event.RETURN): State.RETURNING,
+        (State.RENDERING, Event.RENDERED): State.RETURNING,
+        (State.RETURNING, Event.RETURN): State.COMPLETED,
+        (State.ERROR, Event.RETURN): State.COMPLETED,
+        (State.STALE_CACHE_CHECK, Event.STALE_FOUND): State.STALE_CACHE,
+        (State.STALE_CACHE_CHECK, Event.STALE_NOT_FOUND): State.ERROR,
+        (State.STALE_CACHE, Event.DATA_READY): State.DATA_READY,
+        (State.ABORTED, Event.RETURN): State.COMPLETED,
     }
 
     def __init__(self, source_spec, cache, fetcher, parser, renderer,
@@ -61,7 +61,7 @@ class DataLifecycleFSM:
             raise RuntimeError(
                 "Invalid transition: {} from {}".format(event, self.state)
             )
-        self.state = entry[0]
+        self.state = entry
 
     def _make_error_record(self, exception, attempt, error_type=None):
         if error_type is None:

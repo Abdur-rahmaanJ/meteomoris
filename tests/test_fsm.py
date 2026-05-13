@@ -220,5 +220,4 @@ class TestFSMDispatch:
         for (state, event), value in DataLifecycleFSM.TRANSITIONS.items():
             assert isinstance(state, State)
             assert isinstance(event, Event)
-            assert isinstance(value, tuple) and len(value) >= 1
-            assert isinstance(value[0], State)
+            assert isinstance(value, State)
