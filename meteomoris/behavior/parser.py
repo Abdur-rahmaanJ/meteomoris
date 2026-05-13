@@ -194,12 +194,12 @@ class Parser:
             if "eclipse of the" not in title_tag:
                 continue
             match = re.search(
-                r"(total|partial) eclipse of the (moon|sun) - (\w+) (\d{1,2})",
+                r"(total|partial|annular) eclipse of the (moon|sun)\s*[–-]\s*(\d{1,2}) (\w+)",
                 title_tag,
             )
             if not match:
                 continue
-            status, ecl_type, month, date = match.groups()
+            status, ecl_type, date, month = match.groups()
             date = int(date)
             ecl_type = ecl_type.lower()
             start, end, info = None, None, ""
@@ -238,7 +238,7 @@ class Parser:
         page_container = soup.find("div", {"class": "left_content"})
         if page_container is None:
             return None
-        page_container = page_container.findAll("p")[1:-1]
+        page_container = page_container.find_all("p")[1:-1]
         eclipse_text = ""
         for line in page_container:
             eclipse_text += line.text + "\n"

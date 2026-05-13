@@ -294,13 +294,12 @@ class Meteo:
         day = datetime.datetime.now().day
         month = calendar.month_name[datetime.datetime.now().month].casefold()
         tides_all = _to_dict(cls.get_tides())
-        try:
-            return tides_all.get("months", {}).get(month, {}).get(str(day), [])
-        except (KeyError, TypeError):
-            try:
-                return tides_all.get("months", {}).get(month, {}).get(day, [])
-            except (KeyError, TypeError):
-                return []
+        month_data = tides_all.get("months", {}).get(month, {})
+        if str(day) in month_data:
+            return month_data[str(day)]
+        if day in month_data:
+            return month_data[day]
+        return []
 
     @classmethod
     def print_today(cls, country="mu"):
