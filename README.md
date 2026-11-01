@@ -1,4 +1,5 @@
 # meteomoris
+[![PyPI Downloads](https://static.pepy.tech/personalized-badge/meteomoris?period=total&units=INTERNATIONAL_SYSTEM&left_color=BLACK&right_color=GREEN&left_text=downloads)](https://pepy.tech/projects/meteomoris)
 
 get info about the weather in mauritius!
 
